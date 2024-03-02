@@ -5,8 +5,9 @@
 
 
 body {
-  background-color: #0069ff22;
-  background-color: #ff690022;
+  /* background-color: #0069ff22; */
+  /* background-color: #ff690022; */
+  background-color: #fff;
 }
 
 @layer utilities {
