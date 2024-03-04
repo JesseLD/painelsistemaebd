@@ -11,12 +11,12 @@ type Props = {
 export const LoggedUser = ({ name }: Props) => {
   return (
     <>
-      <div className="flex h-[56px] items-center gap-2 bg-white">
+      <div className="flex h-[56px] items-center gap-2">
         <div className="flex h-[40px] w-[40px] items-center justify-center rounded-full bg-gray-800 text-xl text-white">
           <p>{name[0]}</p>
         </div>
         <div className="flex items-center gap-2">
-          <span>{name.length > 16 ? `${name.slice(0,16)}...` : name }</span>
+          <span>{name.length > 16 ? `${name.slice(0, 16)}...` : name}</span>
           <span>
             <Dropdown
               label=""
@@ -28,15 +28,14 @@ export const LoggedUser = ({ name }: Props) => {
               )}
             >
               <Dropdown.Item>Dashboard</Dropdown.Item>
-              <Dropdown.Item>Settings</Dropdown.Item>
-              <Dropdown.Item>Earnings</Dropdown.Item>
-              <Dropdown.Item>Sign out</Dropdown.Item>
+              <Dropdown.Item>Config</Dropdown.Item>
+              <Dropdown.Item>Perfil</Dropdown.Item>
+              <Dropdown.Item>Sair</Dropdown.Item>
             </Dropdown>
-            {/* <FaCaretDown color="#999999"/> */}
           </span>
         </div>
 
-        <div className="ml-2">
+        <div className="ml-2 transition hover:cursor-pointer">
           <IoLogOutOutline color="#999999" size={32} />
         </div>
       </div>
