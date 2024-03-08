@@ -31,4 +31,4 @@ jobs:
         user: ${{ secrets.SSH_USERNAME }}
         pass: ${{ secrets.SSH_PASSWORD }}
         run: |
-          echo "Comando echo executado com sucesso!"
+          echo "OK"
