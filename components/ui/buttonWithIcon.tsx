@@ -18,19 +18,16 @@ export const ButtonWithIcon: React.FC<Props> = ({
   iconProps,
   isActive,
 }) => {
-  return isActive ? (
-    <div className="flex w-full max-w-[220px] cursor-pointer items-center gap-4 rounded-l-lg bg-slate-400 p-4 text-white transition hover:-translate-y-2">
+  return (
+    <div
+      className={`-rounded-sm after: flex w-full max-w-[80px] md:max-w-[220px] cursor-pointer items-center gap-4 rounded-l-lg ${
+        isActive ? "bg-gray-200" : "bg-white"
+      } p-4 transition hover:-translate-y-2`}
+    >
       <div>
-        <Icon {...iconProps} />
+        <Icon {...iconProps} size={24} />
       </div>
-      <div>{text}</div>
-    </div>
-  ) : (
-    <div className="flex w-full max-w-[220px] cursor-pointer items-center gap-4 rounded-l-lg bg-white p-4 transition hover:-translate-y-2">
-      <div>
-        <Icon {...iconProps} />
-      </div>
-      <div>{text}</div>
+      <div className="hidden md:block">{text}</div>
     </div>
   );
 };
