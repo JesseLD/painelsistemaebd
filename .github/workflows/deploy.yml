@@ -23,9 +23,9 @@ jobs:
     - name: Deploy using ssh
       uses: appleboy/ssh-action@v0.1.4
       with:
-        host: 'sistemaebd.com.br'
-        username: 'realetech'
-        password: '@Jcmma$4569'
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        password: ${{ secrets.SSH_PASSWORD }}
         port: 5544
         script: |
           whoami
