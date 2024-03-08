@@ -16,6 +16,10 @@ jobs:
 
     # As etapas representam uma sequência de tarefas que serão executadas como parte da tarefa
     steps:       
+
+    - name: Repository checkout
+      uses: actions/checkout@v2
+      
     - name: Deploy using ssh
       uses: appleboy/ssh-action@master
       with:
