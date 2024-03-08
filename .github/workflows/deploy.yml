@@ -29,4 +29,5 @@ jobs:
         port: 5544
         script: |
           pwd
+          cd /var/www/painelsistemaebd/
           bash teste.sh
