@@ -9,26 +9,19 @@ on:
       - main
 
 jobs:
-  deploy:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-      
-    - name: Setup SSH
-      run: |
-          echo "USER: ${{ secrets.SSH_USERNAME }}" 
-          echo "HOST: ${{ secrets.SSH_HOST }}"
-          echo "PASSWORD:  ${{ secrets.SSH_PASSWORD }}"
-
-          
-    - name: Run deploy script on remote server
-      uses: matheusvanzan/sshpass-action@v2
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:       
+    - name: Deploy using ssh
+      uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 5544
-        user: ${{ secrets.SSH_USERNAME }}
-        pass: ${{ secrets.SSH_PASSWORD }}
-        run: |
-          echo "OK"
+        script: |
+          echo "done"
