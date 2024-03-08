@@ -24,5 +24,11 @@ jobs:
 
           
     - name: Run deploy script on remote server
-      run: |
-        sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} -p 5544 'echo "Comando echo executado com sucesso!"'
+      uses: matheusvanzan/sshpass-action@v2
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        port: 5544
+        user: ${{ secrets.SSH_USERNAME }}
+        pass: ${{ secrets.SSH_PASSWORD }}
+        run: |
+          'echo "Comando echo executado com sucesso!"'
