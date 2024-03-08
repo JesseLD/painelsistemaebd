@@ -6,9 +6,9 @@ import Link from "next/link";
 import { ButtonWithIcon } from "../ui/buttonWithIcon";
 
 import { MdOutlineSpaceDashboard } from "react-icons/md";
-
+import { BsCashCoin } from "react-icons/bs";
 // import { Pag2e } from "@/app/testcomponents/page";
-
+import { FiUsers } from "react-icons/fi";
 type SidebarItemsAttributes = {
   icon: IconType;
   text: string;
@@ -24,11 +24,17 @@ const sidebarItems: SidebarItemsAttributes[] = [
     href: "/dashboard",
   },
   {
-    icon: MdOutlineSpaceDashboard,
-    text: "Teste",
+    icon: BsCashCoin,
+    text: "Planos",
     isActive: false,
-    href: "/testcomponents",
+    href: "/dashboard/plans/list",
   },
+  {
+    icon: FiUsers,
+    text: "Usuários",
+    isActive: false,
+    href: "/dashboard/users/list",
+  }
 ];
 
 export const Sidebar = () => {
@@ -39,8 +45,8 @@ export const Sidebar = () => {
 
   return (
     <>
-      <div className="h-screen w-[240px] bg-white ">
-        <ul className="flex flex-col gap-2 pl-8 pt-12">
+      <div className="h-screen fixed z-10 w-[80px] md:w-[240px] bg-white top-12">
+        <ul className="flex flex-col gap-2 pl-4 md:pl-8 pt-12 ">
           {sidebarItems.map((item, index) => (
             <Link href={item.href} key={index}>
               <ButtonWithIcon

@@ -1,5 +1,9 @@
 import NextAuth from "next-auth";
+import { PrismaClient } from "@prisma/client";
 
-const handler = NextAuth({});
+import { AuthOptions } from "@/app/utils/auth";
 
+const prisma = new PrismaClient();
+
+const handler = NextAuth(AuthOptions);
 export { handler as GET, handler as POST };
