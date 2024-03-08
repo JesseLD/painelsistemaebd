@@ -18,9 +18,9 @@ jobs:
       
     - name: Setup SSH
       run: |
-          echo "${{ secrets.SSH_USERNAME }}" 
-          echo "${{ secrets.SSH_HOST }}"
-          echo "${{ secrets.SSH_PASSWORD }}"
+          echo "USER: ${{ secrets.SSH_USERNAME }}" 
+          echo "HOST: ${{ secrets.SSH_HOST }}"
+          echo "PASSWORD:  ${{ secrets.SSH_PASSWORD }}"
 
           
     - name: Run deploy script on remote server
