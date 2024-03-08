@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  nextjs:
+    image: node:alpine
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: npm run deploy:prod
+    ports:
+      - "80:3000"
+
+
