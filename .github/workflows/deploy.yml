@@ -30,4 +30,5 @@ jobs:
         script: |
           pwd
           cd /var/www/painelsistemaebd/
+          sudo su -
           bash teste.sh
