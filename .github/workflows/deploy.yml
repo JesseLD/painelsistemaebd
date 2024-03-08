@@ -28,4 +28,4 @@ jobs:
         password: ${{ secrets.SSH_PASSWORD }}
         port: 5544
         script: |
-          whoami
+          bash teste.sh
