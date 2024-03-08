@@ -24,4 +24,4 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 5544
         script: |
-          echo "done"
+          cat teste.sh
