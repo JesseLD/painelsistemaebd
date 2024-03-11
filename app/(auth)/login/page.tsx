@@ -19,9 +19,10 @@ const Page = () => {
   async function handleSubmit(e: any) {
     e.preventDefault();
     const response = await signIn("credentials", {
-      redirect: false,
+      redirect: true,
       email: state.email,
       password: state.password,
+      callbackUrl:"/dashboard"
     });
 
     // alert("response", response);
@@ -29,9 +30,9 @@ const Page = () => {
     if (response?.ok == true) {
       toast.success("Logado com sucesso");
       toast.info("Redirecionando...");
-      setTimeout(() => {
-        location.reload();
-      }, 1000);
+      // setTimeout(() => {
+      //   location.reload();
+      // }, 1000);
       // router.push("/dashboard");
       // reload()
     } else {
@@ -67,7 +68,7 @@ const Page = () => {
           <Input
             name="password"
             type="password"
-            text="password"
+            text="Senha"
             onChange={(e: any) => {
               serState({ ...state, password: e.target.value });
             }}

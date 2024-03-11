@@ -47,10 +47,12 @@ let editPlanDuration = "";
 let editUserID = "";
 let editUserEmail = "";
 
-const loggedUser = (document.querySelector("#loggedEmail") as HTMLInputElement)
 
 
 const Page = ({ user }: any) => {
+
+  const loggedUser = (document.querySelector("#loggedEmail") as HTMLInputElement)
+
   const router = useRouter();
   const [openModal, setOpenModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -522,8 +524,8 @@ const Page = ({ user }: any) => {
               <span className="sr-only">logo</span>
             </TableHeadCell>
             <TableHeadCell>Nome do usuário</TableHeadCell>
-            <TableHeadCell>Email</TableHeadCell>
-            <TableHeadCell>
+            <TableHeadCell className="hidden md:table-cell">Email</TableHeadCell>
+            <TableHeadCell className="hidden md:table-cell">
               <span className="sr-only">Actions</span>
             </TableHeadCell>
           </TableHead>
@@ -550,10 +552,9 @@ const Page = ({ user }: any) => {
                     <TableCell className="whitespace-nowrap font-medium text-gray-900 ">
                       {user.name}
                     </TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>
-                      {/* <BsThreeDotsVertical />
-                       */}
+                    <TableCell className="hidden md:table-cell">{user.email}</TableCell>
+                    <TableCell className="hidden md:table-cell">
+
                       <Dropdown
                         label=""
                         dismissOnClick={false}

@@ -22,8 +22,6 @@ import { HiOutlineExclamationCircle } from "react-icons/hi";
 import MoneyInput from "@/components/ui/moneyInput";
 import { config } from "@/app/utils/config";
 import { addLog } from "@/app/utils/logs";
-const loggedUser = (document.querySelector("#loggedEmail") as HTMLInputElement)
-
 
 type Plan = {
   id: number;
@@ -43,6 +41,9 @@ let editPlanDescription = "";
 let editPlanDuration = "";
 let editPlanId = "";
 const Page = () => {
+
+  const loggedUser = document.querySelector("#loggedEmail") as HTMLInputElement;
+
   const router = useRouter();
   const [openModal, setOpenModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -120,7 +121,9 @@ const Page = () => {
 
       return;
     } else if (response.status == 200) {
-      addLog("Usuario " + loggedUser + " cadastrou um novo plano: " + planName.value);
+      addLog(
+        "Usuario " + loggedUser + " cadastrou um novo plano: " + planName.value,
+      );
       toast.success("Plano cadastrado com sucesso");
       fetchPlans();
 
@@ -175,7 +178,9 @@ const Page = () => {
       .then((data) => data);
 
     if (response.status == 400) {
-      addLog("Usuario " + loggedUser + " Tentou editar o plano: " + planName.value);
+      addLog(
+        "Usuario " + loggedUser + " Tentou editar o plano: " + planName.value,
+      );
 
       toast.error("Erro ao cadastrar plano");
       fetchPlans();
@@ -189,7 +194,9 @@ const Page = () => {
 
       setOpenEditModal(false);
     } else {
-      addLog("Usuario " + loggedUser + " Tentou editar o plano: " + planName.value);
+      addLog(
+        "Usuario " + loggedUser + " Tentou editar o plano: " + planName.value,
+      );
 
       toast.error("Erro Interno");
       fetchPlans();
@@ -215,14 +222,29 @@ const Page = () => {
 
     if (response.status == 400) {
       toast.error("Erro ao deletar plano");
-      addLog("Usuario " + loggedUser + " Tentou deletar o plano: " + planList.find(plan => plan.id === Number.parseInt(id)));
+      addLog(
+        "Usuario " +
+          loggedUser +
+          " Tentou deletar o plano: " +
+          planList.find((plan) => plan.id === Number.parseInt(id)),
+      );
 
       return;
     } else if (response.status == 200) {
       toast.success("Plano deletado com sucesso");
-      addLog("Usuario " + loggedUser + " Deletou o plano: " + planList.find(plan => plan.id === Number.parseInt(id)));
+      addLog(
+        "Usuario " +
+          loggedUser +
+          " Deletou o plano: " +
+          planList.find((plan) => plan.id === Number.parseInt(id)),
+      );
     } else {
-      addLog("Usuario " + loggedUser + " Tentou deletar o plano: " + planList.find(plan => plan.id === Number.parseInt(id)));
+      addLog(
+        "Usuario " +
+          loggedUser +
+          " Tentou deletar o plano: " +
+          planList.find((plan) => plan.id === Number.parseInt(id)),
+      );
 
       toast.error("Erro Interno");
       // console.log(response);
@@ -460,10 +482,16 @@ const Page = () => {
         <Table>
           <TableHead>
             <TableHeadCell>Nome do plano</TableHeadCell>
-            <TableHeadCell>Valor</TableHeadCell>
-            <TableHeadCell>Duração (Dias)</TableHeadCell>
-            <TableHeadCell>Descrição</TableHeadCell>
-            <TableHeadCell>
+            <TableHeadCell className="hidden md:table-cell">
+              Valor
+            </TableHeadCell>
+            <TableHeadCell className="hidden md:table-cell">
+              Duração (Dias)
+            </TableHeadCell>
+            <TableHeadCell className="hidden md:table-cell">
+              Descrição
+            </TableHeadCell>
+            <TableHeadCell className="hidden md:table-cell">
               <span className="sr-only">Actions</span>
             </TableHeadCell>
           </TableHead>
@@ -471,58 +499,62 @@ const Page = () => {
             {plans.length > 0 ? (
               plans.map((plan: Plan, index) => (
                 <TableRow
-                    className="bg-white "
-                    id={plan.id.toString()}
-                    key={index + plan.id.toString()}
-                  >
-                    <TableCell className="whitespace-nowrap font-medium text-gray-900 ">
-                      {plan.name}
-                    </TableCell>
-                    <TableCell>
-                      {new Intl.NumberFormat("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                      }).format((plan.price))}
-                    </TableCell>
-                    <TableCell>{plan.duration} (Dias)</TableCell>
-                    <TableCell>{plan.description}</TableCell>
-                    <TableCell>
-                      {/* <BsThreeDotsVertical />
-                       */}
-                      <Dropdown
-                        label=""
-                        dismissOnClick={false}
-                        renderTrigger={() => (
-                          <span className="flex items-center gap-1 font-medium  hover:cursor-pointer hover:underline">
-                            <BsThreeDotsVertical size={18} />
-                          </span>
-                        )}
+                  className="bg-white "
+                  id={plan.id.toString()}
+                  key={index + plan.id.toString()}
+                >
+                  <TableCell className="whitespace-nowrap font-medium text-gray-900 ">
+                    {plan.name}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {new Intl.NumberFormat("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    }).format(plan.price)}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {plan.duration} (Dias)
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {plan.description}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {/* <BsThreeDotsVertical />
+                     */}
+                    <Dropdown
+                      label=""
+                      dismissOnClick={false}
+                      renderTrigger={() => (
+                        <span className="flex items-center gap-1 font-medium  hover:cursor-pointer hover:underline">
+                          <BsThreeDotsVertical size={18} />
+                        </span>
+                      )}
+                    >
+                      <Dropdown.Item
+                        onClick={() => {
+                          editPlanId = plan.id.toString();
+                          setEditPlanName(plan.name);
+                          setEditPlanValue(plan.price.toString());
+                          setEditPlanDescription(plan.description);
+                          setEditPlanDuration(plan.duration.toString());
+                          setOpenEditModal(true);
+                        }}
                       >
-                        <Dropdown.Item
-                          onClick={() => {
-                            editPlanId = plan.id.toString();
-                            setEditPlanName(plan.name);
-                            setEditPlanValue(plan.price.toString());
-                            setEditPlanDescription(plan.description);
-                            setEditPlanDuration(plan.duration.toString());
-                            setOpenEditModal(true);
-                          }}
-                        >
-                          Editar Plano
-                        </Dropdown.Item>
+                        Editar Plano
+                      </Dropdown.Item>
 
-                        <Dropdown.Item
-                          className="text-red-500 hover:bg-red-200  hover:text-red-600"
-                          onClick={() => {
-                            toDeleteId = plan.id;
-                            setOpenDeleteModal(true);
-                          }}
-                        >
-                          Excluir
-                        </Dropdown.Item>
-                      </Dropdown>
-                    </TableCell>
-                  </TableRow>
+                      <Dropdown.Item
+                        className="text-red-500 hover:bg-red-200  hover:text-red-600"
+                        onClick={() => {
+                          toDeleteId = plan.id;
+                          setOpenDeleteModal(true);
+                        }}
+                      >
+                        Excluir
+                      </Dropdown.Item>
+                    </Dropdown>
+                  </TableCell>
+                </TableRow>
               ))
             ) : (
               <TableRow className="bg-white ">

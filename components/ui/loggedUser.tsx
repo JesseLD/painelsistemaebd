@@ -34,10 +34,8 @@ export const tailwindColors = [
   "bg-purple-400",
   "bg-teal-500",
   "bg-gray-700",
-  "bg-orange-500"
+  "bg-orange-500",
 ];
-
-
 
 export const LoggedUser = ({ name, profileColor }: Props) => {
   const router = useRouter();
@@ -47,9 +45,7 @@ export const LoggedUser = ({ name, profileColor }: Props) => {
     <>
       <div className="hidden h-[56px] items-center gap-2 md:flex">
         <div
-          className={`flex h-[40px] w-[40px] items-center justify-center rounded-full ${
-            tailwindColors[color]
-          }  text-xl text-white `}
+          className={`flex h-[40px] w-[40px] items-center justify-center rounded-full ${tailwindColors[color]}  text-xl text-white `}
         >
           <p>{name[0]}</p>
         </div>
@@ -65,23 +61,19 @@ export const LoggedUser = ({ name, profileColor }: Props) => {
                 </span>
               )}
             >
-              <Dropdown.Item
-                onClick={() => {
-                  router.push("/dashboard");
-                }}
+              <Link
+                href="/dashboard"
+                color="blue"
+                className="border-none outline-none"
               >
-                Dashboard
-              </Dropdown.Item>
-              <Dropdown.Item
-                onClick={() => {
-                  router.push("/dashboard/users/profile");
-                }}
-              >
-                Perfil
-              </Dropdown.Item>
+                <Dropdown.Item>Dashboard</Dropdown.Item>
+              </Link>
+              <Link href="/dashboard/users/profile">
+                <Dropdown.Item>Perfil</Dropdown.Item>
+              </Link>
               <Dropdown.Item>
                 <span
-                   onClick={() => {
+                  onClick={() => {
                     toast.success("Saindo...");
                     setTimeout(() => {
                       signOut({
