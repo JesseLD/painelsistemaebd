@@ -1,7 +1,30 @@
 "use client";
 import { config } from "@/app/utils/config";
+import { Status } from "@/components/ui/status";
 import { useState, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
+import { formatDate } from "../../page";
+
+type ChurchStatus = {
+  id: number;
+  name: string;
+};
+
+const churchStatus: ChurchStatus[] = [
+  {
+    id: 1,
+    name: "Ativo",
+  },
+  {
+    id: 2,
+    name: "Inativo",
+  },
+  {
+    id: 3,
+    name: "Bloqueado",
+  },
+];
+
 type ChurchData = {
   name: string;
   emailAdmin: string;
@@ -32,7 +55,10 @@ type ChurchJSON = {
   lastLesson: { ultimaAula: string }[];
   totalMatrixUsersExceptStudents: ChurchStatistics[];
   totalMatrizUsers: ChurchStatistics[];
+  datePlan: { datePlan: string }[];
 };
+
+let status = "inactive";
 
 export default function Page({ params }: any) {
   const [data, setData] = useState<ChurchJSON>();
@@ -40,55 +66,64 @@ export default function Page({ params }: any) {
   const fetchChurch = async () => {
     toast.info("Carregando dados, Aguarde..");
 
-    const response = await fetch(
-      `/api/app/church/church?id=${params.id}`,
-      {
-        headers: {
-          authorization: config.api_key as string,
-        },
+    const response = await fetch(`/api/app/church/church?id=${params.id}`, {
+      headers: {
+        authorization: config.api_key as string,
       },
-    )
+    })
       .then((res) => res.json())
       .then((data) => data);
 
     setData(response);
+    // console.log(response.dateplan[0].datePlan);
+
+    if (
+      new Date(response.dateplan[0].datePlan) <= new Date() &&
+      response.churchData[0].isActiveted == 1
+    ) {
+      status = "blocked";
+    } else if (response.churchData[0].isActiveted == 0) {
+      status = "inactive";
+    } else {
+      status = "active";
+    }
   };
 
   useEffect(() => {
     // alert(params.id);
     fetchChurch();
-    return () => {}
-  },[]);
-
-  
+    return () => {};
+  });
 
   return (
     <>
       <div className="container mx-auto py-8">
-        <h1 className="mb-4 text-3xl font-bold">{data?.churchData[0].name}</h1>
+        <h1 className="mb-4 rounded-lg bg-white px-6 py-12 text-3xl font-bold">
+          Igreja: {data?.churchData[0].name}
+        </h1>
 
-        <div className="mb-6 rounded-lg bg-gray-100 p-6">
+        <div className="mb-6 rounded-lg bg-white p-6">
           <h2 className="mb-4 text-xl font-semibold">Informações da Matriz</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 ">
             <div>
               <p>
-                <span className="font-semibold">CNPJ:</span>{" "}
+                <span className="font-semibold">CNPJ: </span>{" "}
                 {data?.churchData[0].CPF_CNPJ}
               </p>
               <p>
-                <span className="font-semibold">E-mail do Administrador:</span>{" "}
+                <span className="font-semibold">E-mail do Administrador: </span>{" "}
                 {data?.churchData[0].emailAdmin}
               </p>
               <p>
-                <span className="font-semibold">Contato:</span>
+                <span className="font-semibold">Contato: </span>
                 {data?.churchData[0].contact}
               </p>
               <p>
-                <span className="font-semibold">Cidade:</span>
+                <span className="font-semibold">Cidade: </span>
                 {data?.churchData[0].city}
               </p>
               <p>
-                <span className="font-semibold">Estado:</span>{" "}
+                <span className="font-semibold">Estado: </span>{" "}
                 {data?.churchData[0].state}
               </p>
               <p>
@@ -96,8 +131,13 @@ export default function Page({ params }: any) {
                 {data?.churchData[0].creationDate}
               </p>
               <p>
+                <span className="font-semibold">Data de Vencimento:</span>{" "}
+                {formatDate(new Date(data?.datePlan[0].datePlan as string))}
+              </p>
+              <p>
                 <span className="font-semibold">Status:</span>{" "}
-                {data?.churchData[0].isActiveted == 1 ? "Ativa" : "Inativa"}
+                {<Status status={status} />}
+                {/* {data?.churchData[0].isActiveted == 1 ? "Ativa" : "Inativa"} */}
               </p>
             </div>
             <div>
@@ -120,7 +160,7 @@ export default function Page({ params }: any) {
                 {data?.totalMatrizUsers[0].total}
               </p>
               <p>
-                <span className="font-semibold">Total de Turmas:</span>
+                <span className="font-semibold">Total de Turmas: </span>
                 {data?.matrixTeams[0].total}
               </p>
               <p>
@@ -135,11 +175,11 @@ export default function Page({ params }: any) {
           </div>
         </div>
 
-        <div className="rounded-lg bg-gray-100 p-6">
+        <div className="rounded-lg bg-white p-6">
           <h2 className="mb-4 text-xl font-semibold">
             Informações da Matriz e Filiais
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <p>
                 <span className="font-semibold">Total de Filiais: </span>

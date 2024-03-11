@@ -31,4 +31,4 @@ jobs:
           pwd
           cd /var/www/painelsistemaebd/
           sudo su -
-          bash teste.sh
+          bash deploy.sh

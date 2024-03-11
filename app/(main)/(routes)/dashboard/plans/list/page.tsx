@@ -21,6 +21,9 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import MoneyInput from "@/components/ui/moneyInput";
 import { config } from "@/app/utils/config";
+import { addLog } from "@/app/utils/logs";
+const loggedUser = (document.querySelector("#loggedEmail") as HTMLInputElement)
+
 
 type Plan = {
   id: number;
@@ -117,6 +120,7 @@ const Page = () => {
 
       return;
     } else if (response.status == 200) {
+      addLog("Usuario " + loggedUser + " cadastrou um novo plano: " + planName.value);
       toast.success("Plano cadastrado com sucesso");
       fetchPlans();
 
@@ -171,17 +175,22 @@ const Page = () => {
       .then((data) => data);
 
     if (response.status == 400) {
+      addLog("Usuario " + loggedUser + " Tentou editar o plano: " + planName.value);
+
       toast.error("Erro ao cadastrar plano");
       fetchPlans();
       setOpenEditModal(false);
       // console.log(response.error);
       return;
     } else if (response.status == 200) {
+      addLog("Usuario " + loggedUser + " editou o plano: " + planName.value);
       toast.success("Plano Atualizado com sucesso");
       fetchPlans();
 
       setOpenEditModal(false);
     } else {
+      addLog("Usuario " + loggedUser + " Tentou editar o plano: " + planName.value);
+
       toast.error("Erro Interno");
       fetchPlans();
 
@@ -206,10 +215,15 @@ const Page = () => {
 
     if (response.status == 400) {
       toast.error("Erro ao deletar plano");
+      addLog("Usuario " + loggedUser + " Tentou deletar o plano: " + planList.find(plan => plan.id === Number.parseInt(id)));
+
       return;
     } else if (response.status == 200) {
       toast.success("Plano deletado com sucesso");
+      addLog("Usuario " + loggedUser + " Deletou o plano: " + planList.find(plan => plan.id === Number.parseInt(id)));
     } else {
+      addLog("Usuario " + loggedUser + " Tentou deletar o plano: " + planList.find(plan => plan.id === Number.parseInt(id)));
+
       toast.error("Erro Interno");
       // console.log(response);
     }
@@ -453,14 +467,13 @@ const Page = () => {
               <span className="sr-only">Actions</span>
             </TableHeadCell>
           </TableHead>
-          <TableBody className="divide-y">
+          <TableBody className="divide-y" key={"main"}>
             {plans.length > 0 ? (
               plans.map((plan: Plan, index) => (
-                <>
-                  <TableRow
+                <TableRow
                     className="bg-white "
                     id={plan.id.toString()}
-                    key={index}
+                    key={index + plan.id.toString()}
                   >
                     <TableCell className="whitespace-nowrap font-medium text-gray-900 ">
                       {plan.name}
@@ -510,7 +523,6 @@ const Page = () => {
                       </Dropdown>
                     </TableCell>
                   </TableRow>
-                </>
               ))
             ) : (
               <TableRow className="bg-white ">

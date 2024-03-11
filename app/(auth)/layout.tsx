@@ -17,11 +17,7 @@ const LoginLayout = async ({
   
   }
   return (
-    <html lang="pt-br">
-      <body>
-        <Page />
-      </body>
-    </html>
+  <><Page /></>
   );
 };
 

@@ -52,7 +52,9 @@ export async function GET(req: Request) {
   const totalTeamsMatrixAndBranches = await sequelize.query(`SELECT COUNT(*) AS total FROM Team WHERE idChurch IN (SELECT id FROM Church WHERE id = ${id} OR idChurch = ${id});`);
   const lastLesson = await sequelize.query(`SELECT MAX(dateClass) AS ultimaAula FROM Classroom WHERE idChurch = ${id};`);
   const totalMatrixUsersExceptStudents = await sequelize.query(`SELECT COUNT(DISTINCT User.id) AS total FROM User LEFT JOIN User_PermissionLevel ON User.id = User_PermissionLevel.idUser WHERE (User_PermissionLevel.idPermissionLevel != 7 OR User_PermissionLevel.idPermissionLevel IS NULL) AND User.idChurch = ${id};`);
+
   const totalMatrizUsers = await sequelize.query(`SELECT COUNT(*) AS total FROM User WHERE idChurch = ${id};`);
+  const dateplan = await sequelize.query(`SELECT datePlan FROM Church WHERE id = ${id} AND idChurch IS NULL`);
 
 
 
@@ -71,5 +73,6 @@ export async function GET(req: Request) {
     lastLesson: lastLesson[0],
     totalMatrixUsersExceptStudents: totalMatrixUsersExceptStudents[0],
     totalMatrizUsers: totalMatrizUsers[0],
+    dateplan: dateplan[0]
   });
 }

@@ -17,6 +17,7 @@ import {
   Modal,
   TextInput,
   Datepicker,
+  CustomFlowbiteTheme,
 } from "flowbite-react";
 
 import { Status } from "@/components/ui/status";
@@ -27,7 +28,8 @@ import { useRouter } from "next/navigation";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { ToastContainer, toast } from "react-toastify";
 import { config } from "@/app/utils/config";
-import { stat } from "fs";
+import { addToCache, getFromCache } from "@/app/utils/cache";
+import { addLog } from "@/app/utils/logs";
 
 type Plan = {
   id: number;
@@ -63,7 +65,7 @@ function formatDateY(dateString: string) {
   return `${year}-${month}-${day}`;
 }
 
-function formatDate(date: Date) {
+export function formatDate(date: Date) {
   // Obtém o dia, mês e ano da data
   const day = String(date.getDate() + 1).padStart(2, "0"); // Garante que tenha dois dígitos, adicionando um zero à esquerda, se necessário
   const month = String(date.getMonth() + 1).padStart(2, "0"); // O mês é baseado em zero, então é necessário adicionar 1
@@ -102,6 +104,8 @@ const churchStatus: ChurchStatus[] = [
 ];
 
 export default function Home() {
+  const actualUser = document.querySelector("#loggedEmail") as HTMLInputElement;
+
   const router = useRouter();
   const [data, setData] = useState([]);
   const [plans, setPlans] = useState([]);
@@ -123,11 +127,15 @@ export default function Home() {
     )
       .then((res) => res.json())
       .then((data) => data);
-
+    // console.log("Data fetched");
     // console.log(response.data);
     response.data.map((church: Church) => Churches.push(church));
     setData(response.data);
+    addToCache("churches", response.data);
+    // console.log("Cache", getFromCache("churches"));
+    return;
   };
+
   const fetchPlans = async () => {
     const response = await fetch(`/api/app/plans/list`, {
       headers: {
@@ -144,11 +152,14 @@ export default function Home() {
   const handleSelect = async (e: any) => {
     const id = e.target.id;
     const plan = e.target.value;
-    // console.log("ID", id);
-    // console.log("PLAN", plan);
+    console.log("ID", id);
+    console.log("PLAN", plan);
   };
 
   const handleUpdate = async (id: string, plan: string) => {
+    addLog(
+      `Plano da igreja ${id} alterado para ${plan} por ${actualUser?.value}`,
+    );
     const response = await fetch(
       `/api/app/church/update?id=${id}&plan=${plan}`,
       {
@@ -159,12 +170,33 @@ export default function Home() {
     )
       .then((res) => res.json())
       .then((data) => data);
+    let duration = 0;
+    // alert((id + 10).toString());
+    const selected = document.getElementById(
+      (Number.parseInt(id) + 10).toString(),
+    ) as HTMLSelectElement;
+    planList.forEach((plan: Plan) => {
+      if (plan.name == selected.value) {
+        duration = Number(plan.duration);
+        // console.log("dur", duration);
+        // console.log(
+        //   `ID ${id} Duracao ${plan.duration} Dias - Nome: ${plan.name}`,
+        // );
+      }
+    });
 
+    await renewPlan(
+      Number.parseInt(id),
+      addPlanDays(new Date().toISOString(), duration),
+    );
     await fetchData();
     await fetchPlans();
   };
 
   const handleActivate = async (id: string, activate: number) => {
+    addLog(
+      `Igreja ${id} ${activate == 1 ? "ativada" : "desativada"} por ${actualUser?.value}`,
+    );
     const response = await fetch(
       `/api/app/church/activate?id=${id}&activate=${activate}`,
       {
@@ -249,7 +281,7 @@ export default function Home() {
   };
 
   const renewPlan = async (id: number, time: string) => {
-    // alert("Atualizado com sucesso")
+    addLog(`Plano da igreja ${id} renovado por ${actualUser?.value}`);
     const response = await fetch(
       `/api/app/church/updatePlan?id=${id}&time=${time}`,
       {
@@ -270,6 +302,7 @@ export default function Home() {
 
   const blockPlan = async (id: number) => {
     // alert("Atualizado com sucesso")
+    addLog(`Plano da igreja ${id} bloqueado por ${actualUser?.value}`);
     const response = await fetch(
       `/api/app/church/updatePlan?id=${id}&time=${addPlanDays(new Date().toISOString(), -1)}`,
       {
@@ -345,7 +378,7 @@ export default function Home() {
             <TextInput placeholder="CPF/CNPJ" id="churchCNPJ" type="text" />
             <Select id="planSelect">
               <option value="">Plano</option>
-              {plans.map((plan: any, index) => {
+              {plans.map((plan: any, index: any) => {
                 return (
                   <option
                     value={plan.name}
@@ -392,12 +425,12 @@ export default function Home() {
           </div>
         </div>
 
-        <Table>
+        <Table id="table">
           <TableHead>
             <TableHeadCell>Nome da Igreja</TableHeadCell>
             <TableHeadCell>CPF/CNPJ</TableHeadCell>
             <TableHeadCell>Status</TableHeadCell>
-            <TableHeadCell className="hidden md:table-cell">
+            <TableHeadCell className="hidden  xl:table-cell">
               Data Início
             </TableHeadCell>
             <TableHeadCell className="hidden md:table-cell">
@@ -411,7 +444,7 @@ export default function Home() {
             </TableHeadCell>
           </TableHead>
 
-          <TableBody className="divide-y">
+          <TableBody className="divide-y overflow-auto">
             {data.length == 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="text-center">
@@ -419,7 +452,7 @@ export default function Home() {
                 </TableCell>
               </TableRow>
             ) : (
-              data.map((item: Church, index) => {
+              data.map((item: Church, index: any) => {
                 let status = "inactive";
 
                 if (
@@ -442,7 +475,7 @@ export default function Home() {
                     className="bg-white hover:cursor-pointer hover:bg-slate-100 hover:opacity-90"
                   >
                     <TableCell
-                      className="whitespace-nowrap font-medium text-gray-900 dark:text-white"
+                      className="w-[160px] whitespace-nowrap font-medium text-gray-900 dark:text-white 2xl:w-[120px]"
                       onClick={() => {
                         router.push("/dashboard/church/" + item.id.toString());
                       }}
@@ -458,18 +491,22 @@ export default function Home() {
                           : item.name}
                       </span>
                     </TableCell>
-                    <TableCell>{item.CPF_CNPJ.replace(/[./-]/g, "")}</TableCell>
-                    <TableCell>{<Status status={status} />}</TableCell>
-                    <TableCell className="hidden md:table-cell">
+                    <TableCell className="w-[120px]">
+                      {item.CPF_CNPJ.replace(/[./-]/g, "")}
+                    </TableCell>
+                    <TableCell className="w-[120px] 2xl:w-[160]">
+                      {<Status status={status} />}
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell md:w-[120px] ">
                       {formatDate(new Date(item.creationDate))}
                     </TableCell>
-                    <TableCell className="hidden md:table-cell">
+                    <TableCell className="hidden md:table-cell md:w-[120px] ">
                       <input
                         type="date"
                         name=""
                         id={(item.id + 2).toString()}
                         value={formatDateY(item.dateplan)}
-                        className="block rounded-lg border border-gray-300 bg-gray-50 p-2.5 ps-10 text-sm text-gray-900 hover:cursor-pointer focus:border-blue-500 focus:ring-blue-500"
+                        className="block w-[140px] rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 hover:cursor-pointer focus:border-blue-500 focus:ring-blue-500"
                         placeholder="Select date"
                         onChange={() => {
                           const selected = document.getElementById(
@@ -479,7 +516,7 @@ export default function Home() {
                         }}
                       />
                     </TableCell>
-                    <TableCell className="hidden md:table-cell">
+                    <TableCell className="hidden md:table-cell md:w-[140px] ">
                       <Select
                         id={(item.id + 10).toString()}
                         onChange={() => {
@@ -494,10 +531,10 @@ export default function Home() {
                           setOpenModal(true);
                         }}
                       >
-                        {plans.map((plan: any, index) => {
+                        {plans.map((plan: any, index: any) => {
                           if (plan.name == item.TypePlan) {
                             return (
-                              <option selected value={plan.name} key={index}>
+                              <option defaultValue={plan.name} key={index}>
                                 {plan.name}
                               </option>
                             );
@@ -511,17 +548,19 @@ export default function Home() {
                         })}
                       </Select>
                     </TableCell>
-                    <TableCell className="hidden md:table-cell">
+                    <TableCell className="hidden md:table-cell md:w-[140px] ">
                       <Dropdown
                         label=""
+                        placement="top"
                         dismissOnClick={false}
                         renderTrigger={() => (
-                          <span className="flex items-center gap-1 font-medium text-cyan-600 hover:underline">
+                          <span className=" flex items-center gap-1 font-medium text-cyan-600 hover:underline">
                             Ações
                           </span>
                         )}
                       >
                         <Dropdown.Item
+
                           onClick={() => {
                             // handleUpdatePlan();
                             // alert(select)

@@ -27,20 +27,15 @@ import { Globals } from "@/app/utils/globals";
 import { redirect } from "next/navigation";
 // import { log } from "console";
 import { signOut } from "next-auth/react";
+import { tailwindColors } from "@/components/ui/loggedUser";
+import { addLog } from "@/app/utils/logs";	
 
-type Plan = {
-  id: number;
-  name: string;
-  duration: number;
-  price: number;
-  description: string;
-};
 type User = {
   id: number;
   name: string;
   email: string;
 };
-const planList: Plan[] = [];
+
 const userList: User[] = [];
 
 let toDeleteId = 0;
@@ -51,6 +46,9 @@ let editPlanDescription = "";
 let editPlanDuration = "";
 let editUserID = "";
 let editUserEmail = "";
+
+const loggedUser = (document.querySelector("#loggedEmail") as HTMLInputElement)
+
 
 const Page = ({ user }: any) => {
   const router = useRouter();
@@ -90,6 +88,8 @@ const Page = ({ user }: any) => {
     setUsers(response.data);
   };
   const createUser = async () => {
+
+    addLog("Usuario " + loggedUser + " criou um novo usuario");
     const username = document.getElementById("username") as HTMLInputElement;
     const userEmail = document.getElementById("userEmail") as HTMLInputElement;
     const userPassword = document.getElementById(
@@ -133,12 +133,13 @@ const Page = ({ user }: any) => {
     const userID = editUserID;
     const username = document.getElementById(
       "usernameEdit",
-    ) as HTMLInputElement;
-
-    if (!username.value) {
-      toast.error("Preencha todos os campos");
-      return;
-    }
+      ) as HTMLInputElement;
+      
+      if (!username.value) {
+        toast.error("Preencha todos os campos");
+        return;
+      }
+    addLog("Usuario " + loggedUser + " alterou o nome do usuario " + username);
 
     const data = {
       id: userID,
@@ -168,7 +169,9 @@ const Page = ({ user }: any) => {
         editUserEmail ==
         (document.querySelector("#loggedEmail") as HTMLInputElement).value
       ) {
-        toast.info("Nome de usuário atualizado deslogando para aplicar alterações");
+        toast.info(
+          "Nome de usuário atualizado deslogando para aplicar alterações",
+        );
         return signOut();
       }
 
@@ -186,6 +189,7 @@ const Page = ({ user }: any) => {
   };
   const changeUserPassword = async () => {
     const userID = editUserID;
+    addLog("Usuario " + loggedUser + " alterou a senha de um usuário ");
 
     const password = document.getElementById(
       "passwordEdit",
@@ -266,11 +270,17 @@ const Page = ({ user }: any) => {
 
     if (response.status == 400) {
       toast.error("Erro ao deletar usuário");
+      addLog("Usuario " + loggedUser + " Tentou deletar o usuario " + toDeleteEmail);
+
       return;
     } else if (response.status == 200) {
+      addLog("Usuario " + loggedUser + " Deletou o usuario " + toDeleteEmail);
+
       toast.success("Usuário deletado com sucesso");
     } else {
       toast.error("Erro Interno");
+      addLog("Usuario " + loggedUser + " Tentou deletar o usuario " + toDeleteEmail);
+
       // console.log(response);
     }
   };
@@ -505,9 +515,12 @@ const Page = ({ user }: any) => {
           </Button>
         </div>
       </div>
-      <div className="min-h-64 w-full overflow-x-auto">
+      <div className="min-h-64 overflow-x-auto">
         <Table>
           <TableHead>
+            <TableHeadCell>
+              <span className="sr-only">logo</span>
+            </TableHeadCell>
             <TableHeadCell>Nome do usuário</TableHeadCell>
             <TableHeadCell>Email</TableHeadCell>
             <TableHeadCell>
@@ -523,6 +536,17 @@ const Page = ({ user }: any) => {
                     id={user.id.toString()}
                     key={index}
                   >
+                    <TableCell className="w-[50px]">
+                      <div
+                        className={`flex h-[40px] w-[40px] items-center justify-center rounded-full ${
+                          tailwindColors[
+                            Math.floor(user.name.length % tailwindColors.length)
+                          ]
+                        }  text-xl text-white `}
+                      >
+                        <p>{user.name[0]}</p>
+                      </div>
+                    </TableCell>
                     <TableCell className="whitespace-nowrap font-medium text-gray-900 ">
                       {user.name}
                     </TableCell>
