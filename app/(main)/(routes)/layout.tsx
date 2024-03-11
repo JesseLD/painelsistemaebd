@@ -37,9 +37,8 @@ export default async function RootLayout({
   Globals.loggedUserEmail = session?.user?.email || "Error";
   // console.log("Globals.loggedUserEmail", Globals.loggedUserEmail);
   return (
-    <html lang="pt-br">
-      <body className={inter.className}>
-        <input type="hidden" name="loggedEmail"  id="loggedEmail" value={session.user?.email?.toString()}/>
+    <>
+    <input type="hidden" name="loggedEmail"  id="loggedEmail" value={session.user?.email?.toString()}/>
         <Header
           pageName="Dashboard"
           userName={session?.user?.name || "Error"}
@@ -52,7 +51,6 @@ export default async function RootLayout({
             <div className="ml-20 md:ml-60 mt-20 w-full p-6">{children}</div>
           </Transition>
         </div>
-      </body>
-    </html>
+    </>
   );
 }

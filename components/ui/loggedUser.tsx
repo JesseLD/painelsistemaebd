@@ -7,18 +7,46 @@ import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { HiMiniBars3 } from "react-icons/hi2";
 import { toast, ToastContainer } from "react-toastify";
+import Link from "next/link";
 
 type Props = {
   name: string;
+  profileColor?: string;
 };
 
-export const LoggedUser = ({ name }: Props) => {
+export const tailwindColors = [
+  "bg-red-500",
+  "bg-blue-400",
+  "bg-green-600",
+  "bg-yellow-300",
+  "bg-indigo-700",
+  "bg-pink-400",
+  "bg-purple-500",
+  "bg-teal-400",
+  "bg-gray-800",
+  "bg-orange-600",
+  "bg-red-700",
+  "bg-blue-300",
+  "bg-green-500",
+  "bg-yellow-400",
+  "bg-indigo-600",
+  "bg-pink-600",
+  "bg-purple-400",
+  "bg-teal-500",
+  "bg-gray-700",
+  "bg-orange-500",
+];
+
+export const LoggedUser = ({ name, profileColor }: Props) => {
   const router = useRouter();
 
+  const color = Math.floor(name.length % tailwindColors.length);
   return (
     <>
       <div className="hidden h-[56px] items-center gap-2 md:flex">
-        <div className="flex h-[40px] w-[40px] items-center justify-center rounded-full bg-gray-800 text-xl text-white ">
+        <div
+          className={`flex h-[40px] w-[40px] items-center justify-center rounded-full ${tailwindColors[color]}  text-xl text-white `}
+        >
           <p>{name[0]}</p>
         </div>
         <div className="flex items-center gap-2">
@@ -33,24 +61,26 @@ export const LoggedUser = ({ name }: Props) => {
                 </span>
               )}
             >
-              <Dropdown.Item
-                onClick={() => {
-                  router.push("/dashboard");
-                }}
+              <Link
+                href="/dashboard"
+                color="blue"
+                className="border-none outline-none"
               >
-                Dashboard
-              </Dropdown.Item>
-              <Dropdown.Item
-                onClick={() => {
-                  router.push("/dashboard/users/profile");
-                }}
-              >
-                Perfil
-              </Dropdown.Item>
+                <Dropdown.Item>Dashboard</Dropdown.Item>
+              </Link>
+              <Link href="/dashboard/users/profile">
+                <Dropdown.Item>Perfil</Dropdown.Item>
+              </Link>
               <Dropdown.Item>
                 <span
                   onClick={() => {
-                    signOut();
+                    toast.success("Saindo...");
+                    setTimeout(() => {
+                      signOut({
+                        redirect: true,
+                        callbackUrl: "/login",
+                      });
+                    }, 1000);
                   }}
                 >
                   Sair
@@ -65,7 +95,10 @@ export const LoggedUser = ({ name }: Props) => {
             onClick={() => {
               toast.success("Saindo...");
               setTimeout(() => {
-                signOut();
+                signOut({
+                  redirect: true,
+                  callbackUrl: "/login",
+                });
               }, 1000);
             }}
           >

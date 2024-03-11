@@ -8,7 +8,7 @@ import { signOut } from "next-auth/react";
 import { config } from "@/app/utils/config";
 import { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
-
+import { addLog } from "@/app/utils/logs";
 type User = {
   name: string;
   email: string;
@@ -27,6 +27,9 @@ const Page = () => {
   const [openEditPassModal, setOpenEditPassModal] = useState(false);
   const [editUserName, setEditUserName] = useState("");
   const [editPassword, setEditPassword] = useState("");
+
+  const loggedUser = (document.querySelector("#loggedEmail") as HTMLInputElement)
+
 
   const fetchProfile = async () => {
     const email = (document.querySelector("#loggedEmail") as HTMLInputElement)
@@ -52,6 +55,7 @@ const Page = () => {
   };
 
   const changeUsername = async () => {
+    addLog("Usuario " + loggedUser + " alterou seu nome");
     const userID = editUserID;
     const username = document.getElementById(
       "usernameEdit",
@@ -102,6 +106,9 @@ const Page = () => {
 
   const changeUserPassword = async () => {
     const userID = editUserID;
+
+    addLog("Usuario " + loggedUser + " alterou sua senha");
+
 
     const password = document.getElementById(
       "passwordEdit",

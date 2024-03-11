@@ -19,10 +19,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const router = useRouter();
-  useEffect(() => {
-    // Redireciona para a página de login quando o componente monta
-    router.push("/dashboard");
-  });
+  // useEffect(() => {
+  //   // Redireciona para a página de login quando o componente monta
+  //   router.push("/dashboard");
+  // });
 
   return (
     <html lang="pt-br">

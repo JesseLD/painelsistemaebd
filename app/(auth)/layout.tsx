@@ -13,15 +13,11 @@ const LoginLayout = async ({
 
   // console.log("[LOGIN]: ",session)
   if(session){
-    return redirect("/dashboard");
+    // return redirect("/dashboard");
   
   }
   return (
-    <html lang="pt-br">
-      <body>
-        <Page />
-      </body>
-    </html>
+  <><Page /></>
   );
 };
 
