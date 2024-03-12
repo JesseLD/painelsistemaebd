@@ -106,6 +106,9 @@ const churchStatus: ChurchStatus[] = [
 const selectedPlans: string[] = [];
 
 export default function Home() {
+  const checkboxRef = React.useRef(null);
+  const checkboxRefs = React.useRef<(HTMLInputElement | null)[]>([]);
+
   let actualUser: HTMLInputElement;
 
   const router = useRouter();
@@ -144,10 +147,12 @@ export default function Home() {
         authorization: config.api_key as string,
       },
     })
-      .then((res) => res.json())
-      .then((data) => data);
-
+    .then((res) => res.json())
+    .then((data) => data);
+    
+    selectedPlans.length = 0;
     response.data.map((plan: Plan) => planList.push(plan));
+    response.data.map((plan: Plan) => selectedPlans.push(plan.name));
     setPlans(response.data);
   };
 
@@ -216,6 +221,7 @@ export default function Home() {
   };
 
   const fetchFilters = async () => {
+    // alert("qui");
     let statusQuery = "";
 
     const churchName = (
@@ -230,6 +236,18 @@ export default function Home() {
     ).value;
 
     // console.log(status);
+    // const plans = document.querySelectorAll<HTMLInputElement>(".checkboxFilter");
+    // const asd = document.querySelectorAll(".checkbox");
+    // console.log(asd);
+
+    // console.log(plans);
+    // console.log(checkboxRef);
+    // plans.forEach((plan) => {
+    //   if (plan.checked) {
+    //     selectedPlans.push(plan.value);
+    //   }
+    //   console.log(plan);
+    // });
 
     let url = `/api/app/church/filter`;
 
@@ -251,6 +269,7 @@ export default function Home() {
       status,
       plans: selectedPlans,
     };
+    // console.log(localData);
     setTimeout(async () => {
       await fetch(url, {
         method: "POST",
@@ -277,6 +296,7 @@ export default function Home() {
     actualUser = document.querySelector("#loggedEmail") as HTMLInputElement;
     fetchData();
     fetchPlans();
+    // plans.map((plan:Plan)=>(selectedPlans.push(plan.name)))
 
     // Retorne uma função de limpeza se for necessário
     return () => {};
@@ -440,22 +460,23 @@ export default function Home() {
                         id={index.toString() + "p"}
                         defaultChecked
                         value={plan.name}
-                        className="checkboxFilter"
+                        className="checkboxFilter checkbox"
+                        ref={checkboxRef}
                         onChange={() => {
                           // selectedPlans.length = 0;
                           // console.log(selectedPlans);
 
-                          const plans =
+                          const plans2 =
                             document.querySelectorAll<HTMLInputElement>(
                               ".checkboxFilter",
                             );
-                          // console.log(plans);
+                          // console.log(plans2);
 
-                          plans.forEach((plan) => {
+                          plans2.forEach((plan) => {
                             if (plan.checked) {
                               selectedPlans.push(plan.value);
                             }
-                            // console.log(plan.value
+                            // console.log(plan.value);
                           });
 
                           // console.log(selectedPlans);
@@ -496,6 +517,19 @@ export default function Home() {
           <div className="flex w-full gap-2">
             <Button
               onClick={() => {
+                const plans =
+                  document.querySelectorAll<HTMLInputElement>(
+                    ".checkboxFilter",
+                  );
+                // console.log(plans);
+
+                plans.forEach((plan) => {
+                  if (plan.checked) {
+                    selectedPlans.push(plan.value);
+                  }
+                  // console.log(plan.value
+                });
+                // console.log(selectedPlans);
                 fetchFilters();
               }}
             >
@@ -625,7 +659,11 @@ export default function Home() {
                         {plans.map((plan: any, index: any) => {
                           // console.log(`${item.name} ${item.TypePlan}`);
                           return (
-                            <option value={plan.name} selected={plan.name === item.TypePlan} key={index}>
+                            <option
+                              value={plan.name}
+                              selected={plan.name === item.TypePlan}
+                              key={index}
+                            >
                               {plan.name}
                             </option>
                           );
