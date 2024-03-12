@@ -147,9 +147,9 @@ export default function Home() {
         authorization: config.api_key as string,
       },
     })
-    .then((res) => res.json())
-    .then((data) => data);
-    
+      .then((res) => res.json())
+      .then((data) => data);
+
     selectedPlans.length = 0;
     response.data.map((plan: Plan) => planList.push(plan));
     response.data.map((plan: Plan) => selectedPlans.push(plan.name));
@@ -614,13 +614,13 @@ export default function Home() {
                           : item.name}
                       </span>
                     </TableCell>
-                    <TableCell className="hidden w-[120px] md:table-cell">
+                    <TableCell className="hidden w-[120px] xl:table-cell">
                       {item.CPF_CNPJ.replace(/[./-]/g, "")}
                     </TableCell>
                     <TableCell className="w-[120px] 2xl:w-[160]">
                       {<Status status={status} />}
                     </TableCell>
-                    <TableCell className="hidden md:table-cell md:w-[120px] ">
+                    <TableCell className="hidden md:w-[120px] xl:table-cell ">
                       {formatDate(new Date(item.creationDate))}
                     </TableCell>
                     <TableCell className="hidden md:table-cell md:w-[120px] ">
