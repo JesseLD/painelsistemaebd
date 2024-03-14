@@ -20,9 +20,11 @@ export async function POST(req: Request) {
   const request = await req.json();
 
   const churchName = request.churchName || "";
-  const CPF_CNPJ = request.churchCNPJ || "";
+  const CPF_CNPJ = request.churchCNPJ.replace(/[./-]/g,'') || "";
   const plans = request.plans || [""];
   const status = request.status || "";
+  const email = request.email || "";
+  const phone = request.phone || "";
 
   // const date = new Date().toISOString().replace("T", " ").replace("Z", "");
 
@@ -50,15 +52,20 @@ export async function POST(req: Request) {
         isActiveted,
         dateplan,
         creationDate,
-        TypePlan 
+        TypePlan,
+        emailAdmin,
+        contact 
       FROM 
         Church 
       WHERE 
         idChurch IS NULL 
         AND name LIKE ?
-        AND REPLACE(REPLACE(REPLACE(CPF_CNPJ, '.', ''), '-', ''), '/', '') LIKE ? 
-        AND TypePlan IN (${placeholders}) ${statusQuery}`,
-    { replacements: [`%${churchName}%`, `%${CPF_CNPJ.replace(/\//g, "")}%`, ...values] }
+        AND REPLACE(REPLACE(REPLACE(CPF_CNPJ, '.', ''), '-', ''), '/', '') LIKE ?
+        AND emailAdmin LIKE ?
+        AND contact LIKE ?
+        AND TypePlan IN (${placeholders}) ${statusQuery}
+        `,
+    { replacements: [`%${churchName}%`, `%${CPF_CNPJ}%`,`%${email}%`,`%${phone}%`, ...values] }
   );
   // setData(data);
   const data = results[0];

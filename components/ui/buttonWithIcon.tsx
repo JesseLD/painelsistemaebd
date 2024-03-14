@@ -5,6 +5,7 @@ type Props = {
   text: string;
   iconProps?: IconProps;
   isActive?: Boolean;
+  collapsed?: Boolean;
 };
 
 interface IconProps {
@@ -17,10 +18,14 @@ export const ButtonWithIcon: React.FC<Props> = ({
   text,
   iconProps,
   isActive,
+  collapsed
 }) => {
   return (
-    <div
-      className={`-rounded-sm after: flex w-full max-w-[80px] md:max-w-[220px] cursor-pointer items-center gap-4 rounded-l-lg ${
+    <>
+    {
+      collapsed == true ? (
+        <div
+      className={`-rounded-sm after: flex w-full max-w-[60px] md:max-w-[220px] cursor-pointer items-center gap-4 rounded-l-lg ${
         isActive ? "bg-gray-200" : "bg-white"
       } p-4 transition hover:-translate-y-2`}
     >
@@ -29,5 +34,20 @@ export const ButtonWithIcon: React.FC<Props> = ({
       </div>
       <div className="hidden md:block">{text}</div>
     </div>
+      ) : (
+        <div
+      className={`flex max-w cursor-pointer items-center rounded-l-lg ${
+        isActive ? "bg-gray-200" : "bg-white"
+      } p-4 transition hover:-translate-y-2`}
+    >
+      <div>
+        <Icon {...iconProps} size={24} />
+      </div>
+    
+    </div>
+      )
+
+    }
+    </>
   );
 };

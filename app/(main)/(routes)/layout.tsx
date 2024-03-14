@@ -45,10 +45,10 @@ export default async function RootLayout({
         />
         <div className="flex">
           <div>
-            <Sidebar />
+             <Sidebar />
           </div>
           <Transition>
-            <div className="ml-20 md:ml-60 mt-20 w-full p-6">{children}</div>
+            <div className="mt-20 w-full p-6">{children}</div>
           </Transition>
         </div>
     </>
