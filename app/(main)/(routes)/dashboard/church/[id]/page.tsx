@@ -173,7 +173,7 @@ export default function Page({ params }: any) {
                   dados relacionados. Por favor, confirme sua decisão 
                 </h3>
                 <h3 className="text-md mb-5 font-normal text-gray-500 dark:text-gray-400 ">
-                  Digite 'Excluir' para confirmar
+                  Digite &apos;Excluir&apos; para confirmar
                 </h3>
                 <div className="py-2">
                   <TextInput
