@@ -104,6 +104,28 @@ const churchStatus: ChurchStatus[] = [
 ];
 
 const selectedPlans: string[] = [];
+let timer: any;
+
+function cpfCNPJMask(element: string) {
+  // Remove caracteres não numéricos
+  element = element.replace(/\D/g, "");
+
+  // Aplica a máscara de CPF se a entrada tiver 11 dígitos
+  if (element.length === 11) {
+    return element.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+  }
+
+  // Aplica a máscara de CNPJ se a entrada tiver 14 dígitos
+  if (element.length === 14) {
+    return element.replace(
+      /(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,
+      "$1.$2.$3/$4-$5",
+    );
+  }
+
+  // Retorna a entrada original se não estiver no formato esperado
+  return element;
+}
 
 export default function Home() {
   const checkboxRef = React.useRef(null);
@@ -234,6 +256,10 @@ export default function Home() {
     const status = (
       document.getElementById("statusSelect") as HTMLSelectElement
     ).value;
+    const email = (document.getElementById("emailFilter") as HTMLInputElement)
+      .value;
+    const phone = (document.getElementById("phoneFilter") as HTMLInputElement)
+      .value;
 
     // console.log(status);
     // const plans = document.querySelectorAll<HTMLInputElement>(".checkboxFilter");
@@ -268,6 +294,8 @@ export default function Home() {
       churchCNPJ,
       status,
       plans: selectedPlans,
+      email,
+      phone,
     };
     // console.log(localData);
     setTimeout(async () => {
@@ -392,6 +420,15 @@ export default function Home() {
           </div>
         </Modal.Body>
       </Modal>
+
+      <div className="overflow-x-auto">
+        <div className="mb-2 flex w-full flex-col gap-2 rounded-lg py-2">
+          <span className="flex w-full text-sm rounded-md bg-yellow-100 p-2 text-yellow-600">
+            Quando a data de vencimento for alterada, as atualizações serão aplicadas após um atraso de 5 segundos.
+          </span>
+        </div>
+      </div>
+
       <div className="overflow-x-auto">
         <div className="mb-6 flex w-full flex-col gap-2 rounded-lg bg-white p-6">
           <h1 className="text-xl font-bold">Filtros</h1>
@@ -506,6 +543,8 @@ export default function Home() {
                 );
               })}
             </Select>
+            <TextInput placeholder="Email" id="emailFilter" type="email" />
+            <TextInput placeholder="Telefone" id="phoneFilter" type="text" />
           </div>
           {results == true ? (
             <div className="w-full py-4">
@@ -615,7 +654,9 @@ export default function Home() {
                       </span>
                     </TableCell>
                     <TableCell className="hidden w-[120px] xl:table-cell">
-                      {item.CPF_CNPJ.replace(/[./-]/g, "")}
+                      {/* {item.CPF_CNPJ.replace(/[./-]/g, "")}
+                       */}
+                      {cpfCNPJMask(item.CPF_CNPJ)}
                     </TableCell>
                     <TableCell className="w-[120px] 2xl:w-[160]">
                       {<Status status={status} />}
@@ -632,11 +673,14 @@ export default function Home() {
                         className="block w-[140px] rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 hover:cursor-pointer focus:border-blue-500 focus:ring-blue-500"
                         placeholder="Select date"
                         onChange={() => {
-                          toast.info("Alterando data, Aguarde...");
-                          const selected = document.getElementById(
-                            (item.id + 2).toString(),
-                          ) as HTMLInputElement;
-                          renewPlan(item.id, selected.value);
+                          clearTimeout(timer);
+                          timer = setTimeout(() => {
+                            toast.info("Alterando data, Aguarde...");
+                            const selected = document.getElementById(
+                              (item.id + 2).toString(),
+                            ) as HTMLInputElement;
+                            renewPlan(item.id, selected.value);
+                          }, 5000);
                         }}
                       />
                     </TableCell>

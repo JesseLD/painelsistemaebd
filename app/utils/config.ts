@@ -4,5 +4,6 @@ export const config = {
   db_user: process.env.SEQUELIZE_DB_USER || "root",
   db_password: process.env.SEQUELIZE_DB_PASSWORD || "",
   db_port: process.env.SEQUELIZE_DB_PORT || "3306",
-  api_key: process.env.API_KEY || "morango10"
+  api_key: process.env.API_KEY || "morango10",
+  delete_password: process.env.DELETE_PASSWORD || "Excluir",
 };
