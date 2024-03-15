@@ -26,15 +26,16 @@ export async function POST(req: Request) {
   const email = request.email || "";
   const phone = request.phone || "";
 
-  // const date = new Date().toISOString().replace("T", " ").replace("Z", "");
-
-  // console.log("DATEEEEEEEEEEEEEEEEEEEEEEEEEEE", date.replace(/T.*/, " "));
   let statusQuery = "";
 
-  if (status == "2") {
+  const date = new Date().toISOString().split('T')[0];
+  if(status == "1"){
+    statusQuery = `AND isActiveted = 1 AND datePlan  >= '${date} 00:00:00.00'`
+  }
+  else if (status == "2") {
     statusQuery = `AND isActiveted = 0`;
   } else if (status == "3") {
-    statusQuery = `AND isActiveted = 1 AND datePlan  <= DATE_SUB(CURDATE(), INTERVAL 1 DAY)`;
+    statusQuery = `AND isActiveted = 1 AND datePlan  <= '${date} 00:00:00.00'`;
   }
   // console.log(plans)
 
@@ -62,8 +63,9 @@ export async function POST(req: Request) {
         AND name LIKE ?
         AND REPLACE(REPLACE(REPLACE(CPF_CNPJ, '.', ''), '-', ''), '/', '') LIKE ?
         AND emailAdmin LIKE ?
-        AND contact LIKE ?
-        AND TypePlan IN (${placeholders}) ${statusQuery}
+        AND contact LIKE ? 
+        ${statusQuery }
+        AND TypePlan IN (${placeholders}) 
         `,
     { replacements: [`%${churchName}%`, `%${CPF_CNPJ}%`,`%${email}%`,`%${phone}%`, ...values] }
   );
