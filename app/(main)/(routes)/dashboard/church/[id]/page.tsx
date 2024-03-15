@@ -209,7 +209,7 @@ export default function Page({ params }: any) {
             <h1 className="mb-4 flex justify-between rounded-lg bg-white px-6 py-12 text-3xl font-bold">
               Igreja: {data?.churchData.name}
               <a
-                href={`https://api.whatsapp.com/send?phone=${data?.churchData.contact.replace(/[()-]/g, "").replace(" ", "")}`}
+                href={`#`}
                 target="_blank"
               >
                 <FaWhatsapp
@@ -331,7 +331,7 @@ export default function Page({ params }: any) {
                           </TableCell>
                           <TableCell className="hidden md:table-cell">
                             <a
-                              href={`https://api.whatsapp.com/send?phone=${user.contact.replace(/[()-]/g, "").replace(" ", "")}`}
+                              href={`#`}
                               target="_blank"
                             >
                               <FaWhatsapp
