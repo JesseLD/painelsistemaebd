@@ -106,6 +106,14 @@ const churchStatus: ChurchStatus[] = [
 const selectedPlans: string[] = [];
 let timer: any;
 
+type SinglePlan = {
+  id: number;
+  name: string;
+  selected: boolean;
+}
+
+const checkboxPlanArray:SinglePlan[] = [];
+
 function cpfCNPJMask(element: string) {
   // Remove caracteres não numéricos
   element = element.replace(/\D/g, "");
@@ -164,6 +172,7 @@ export default function Home() {
   };
 
   const fetchPlans = async () => {
+    
     try {
       const response = await fetch(`/api/app/plans/list`, {
         headers: {
@@ -175,6 +184,11 @@ export default function Home() {
       selectedPlans.length = 0;
       response.data.map((plan: Plan) => planList.push(plan));
       response.data.map((plan: Plan) => selectedPlans.push(plan.name));
+      console.log("A",response.data);
+      checkboxPlanArray.length = 0;
+      response.data.map((plan: Plan) => {
+        checkboxPlanArray.push({id: plan.id, name: plan.name, selected: true})
+      }) 
       setPlans(response.data);
     } catch (e) {
       // console.log(e);
@@ -697,6 +711,9 @@ export default function Home() {
                       >
                         {plans.map((plan: any, index: any) => {
                           // console.log(`${item.name} ${item.TypePlan}`);
+
+                          
+
                           return (
                             <option
                               value={plan.name}
