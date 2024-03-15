@@ -9,5 +9,5 @@ export const config = {
   db_port: process.env.SEQUELIZE_DB_PORT || "3306",
   api_key: process.env.API_KEY || "morango10",
   delete_password: process.env.DELETE_PASSWORD || "d3leteCh@rchN0w!",
-  api_url: process.env.API_URL || "http://painel.sistemaebd.com.br:6632/",
+  api_url: process.env.API_URL || "https://apipainel.sistemaebd.com.br/",
 };
