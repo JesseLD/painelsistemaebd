@@ -164,18 +164,22 @@ export default function Home() {
   };
 
   const fetchPlans = async () => {
-    const response = await fetch(`/api/app/plans/list`, {
-      headers: {
-        authorization: config.api_key as string,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => data);
-
-    selectedPlans.length = 0;
-    response.data.map((plan: Plan) => planList.push(plan));
-    response.data.map((plan: Plan) => selectedPlans.push(plan.name));
-    setPlans(response.data);
+    try {
+      const response = await fetch(`/api/app/plans/list`, {
+        headers: {
+          authorization: config.api_key as string,
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => data);
+      selectedPlans.length = 0;
+      response.data.map((plan: Plan) => planList.push(plan));
+      response.data.map((plan: Plan) => selectedPlans.push(plan.name));
+      setPlans(response.data);
+    } catch (e) {
+      // console.log(e);
+      toast.error("Erro ao buscar planos");
+    }
   };
 
   const handleUpdate = async (id: string, plan: string) => {
@@ -243,9 +247,6 @@ export default function Home() {
   };
 
   const fetchFilters = async () => {
-    // alert("qui");
-    let statusQuery = "";
-
     const churchName = (
       document.getElementById("churchName") as HTMLInputElement
     ).value;
@@ -261,61 +262,53 @@ export default function Home() {
     const phone = (document.getElementById("phoneFilter") as HTMLInputElement)
       .value;
 
-    // console.log(status);
-    // const plans = document.querySelectorAll<HTMLInputElement>(".checkboxFilter");
-    // const asd = document.querySelectorAll(".checkbox");
-    // console.log(asd);
-
-    // console.log(plans);
-    // console.log(checkboxRef);
-    // plans.forEach((plan) => {
-    //   if (plan.checked) {
-    //     selectedPlans.push(plan.value);
-    //   }
-    //   console.log(plan);
-    // });
-
     let url = `/api/app/church/filter`;
 
-    // console.log(selectedPlans);
-
+    let statusFilter = ""
     if (status == "Ativo") {
-      url += `&status=1`;
+      statusFilter = `1`;
     } else if (status == "Inativo") {
-      url += `&status=2`;
+      statusFilter = `2`;
     } else if (status == "Bloqueado") {
-      url += `&status=3`;
+      statusFilter = `3`;
     }
 
     // url+=statusQuery;
     // alert(url);
+    console.log(status);
     const localData = {
       churchName,
       churchCNPJ,
-      status,
+      status: statusFilter,
       plans: selectedPlans,
       email,
       phone,
     };
-    // console.log(localData);
-    setTimeout(async () => {
-      await fetch(url, {
-        method: "POST",
-        headers: {
-          authorization: config.api_key as string,
-        },
-        body: JSON.stringify(localData),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          // console.log(data);
-          return setData(data.data);
-        });
-      await fetchPlans();
-    }, 500);
-    toast.info("Filtrado com sucesso");
-    showResults(true);
-    // se
+    console.log(localData);
+
+    try {
+      setTimeout(async () => {
+        await fetch(url, {
+          method: "POST",
+          headers: {
+            authorization: config.api_key as string,
+          },
+          body: JSON.stringify(localData),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            // console.log(data);
+            return setData(data.data);
+          });
+        await fetchPlans();
+      }, 500);
+
+      toast.info("Filtrado com sucesso");
+      showResults(true);
+    } catch (e) {
+      // console.log(e);
+      toast.error("Erro ao filtrar");
+    }
   };
 
   useEffect(() => {
@@ -423,8 +416,9 @@ export default function Home() {
 
       <div className="overflow-x-auto">
         <div className="mb-2 flex w-full flex-col gap-2 rounded-lg py-2">
-          <span className="flex w-full text-sm rounded-md bg-yellow-100 p-2 text-yellow-600">
-            Quando a data de vencimento for alterada, as atualizações serão aplicadas após um atraso de 5 segundos.
+          <span className="flex w-full rounded-md bg-yellow-100 p-2 text-sm text-yellow-600">
+            Quando a data de vencimento for alterada, as atualizações serão
+            aplicadas após um atraso de 5 segundos.
           </span>
         </div>
       </div>
@@ -569,6 +563,7 @@ export default function Home() {
                   // console.log(plan.value
                 });
                 // console.log(selectedPlans);
+                // alert("Filtrando...")
                 fetchFilters();
               }}
             >
