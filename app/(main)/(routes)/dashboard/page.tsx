@@ -434,6 +434,9 @@ export default function Home() {
             Quando a data de vencimento for alterada, as atualizações serão
             aplicadas após um atraso de 5 segundos.
           </span>
+          <span className="flex w-full rounded-md bg-yellow-100 p-2 text-sm text-yellow-600">
+            Links de Whatsapp removidos temporariamente!
+          </span>
         </div>
       </div>
 

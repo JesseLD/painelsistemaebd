@@ -149,7 +149,7 @@ export default function Page({ params }: any) {
             <h1 className="mb-4 flex justify-between rounded-lg bg-white px-6 py-12 text-3xl font-bold">
               Nome: {data?.name}
               <a
-                href={`https://api.whatsapp.com/send?phone=${data?.contact.replace(/[()-]/g, "").replace(" ", "")}`}
+                href={'#'}
                 target="_blank"
               >
                 <FaWhatsapp
