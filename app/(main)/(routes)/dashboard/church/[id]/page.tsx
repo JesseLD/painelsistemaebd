@@ -4,7 +4,19 @@ import { Status } from "@/components/ui/status";
 import { useState, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { formatDate } from "../../page";
-import { Button, Modal, Spinner, TextInput } from "flowbite-react";
+import {
+  Button,
+  Dropdown,
+  Modal,
+  Spinner,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeadCell,
+  TableRow,
+  TextInput,
+} from "flowbite-react";
 import { resolve } from "path";
 import { FaWhatsapp } from "react-icons/fa";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
@@ -49,34 +61,21 @@ type ChurchStatistics = {
 
 type ChurchJSON = {
   churchData: ChurchData;
-  branchesTotal: ChurchStatistics;
-  totalStudents: {
-    total_students: number;
-  };
-  totalTeachers: {
-    total_teachers: number;
-  };
-  matrixTeams: ChurchStatistics;
-  matrizClasses: ChurchStatistics;
-  studentsMatrixAndBranch: {
-    total_students: number;
-  };
-  teachersMatrixAndBranch: {
-    total_teachers: number;
-  };
-  totalUsersExceptStudents: {
-    total_users_except_students: number;
-  };
-  totalUsers: {
-    total_users: number;
-  };
-  totalTeamsMatrixAndBranches: ChurchStatistics;
-  lastLesson: { last_lesson: string };
-  totalMatrixUsersExceptStudents: {
-    total_users_except_students: number;
-  };
-  totalMatrizUsers: ChurchStatistics;
-  dateplan: { datePlan: string };
+  branchesTotal: number;
+  totalStudents: number;
+  totalTeachers: number;
+  matrixTeams: number;
+  matrizClasses: number;
+  studentsMatrixAndBranch: number;
+  teachersMatrixAndBranch: number;
+  totalUsersExceptStudents: number;
+  totalUsers: number;
+  totalTeamsMatrixAndBranches: number;
+  lastLesson: string;
+  totalMatrixUsersExceptStudents: number;
+  totalMatrizUsers: number;
+  dateplan: string;
+  churchAdmins: any;
 };
 
 let status = "inactive";
@@ -88,9 +87,9 @@ export default function Page({ params }: any) {
   const router = useRouter();
   const fetchChurch = async () => {
     toast.info("Carregando dados, Aguarde..");
-
+    console.log(config.api_url);
     try {
-      const response = await fetch(`/api/app/church/church?id=${params.id}`, {
+      const response = await fetch(config.api_url + `v0/Church/${params.id}`, {
         headers: {
           authorization: config.api_key as string,
         },
@@ -98,16 +97,16 @@ export default function Page({ params }: any) {
         .then((response) => response.json())
         .then((data) => data);
 
-      setData(response);
-      // console.log(response);
+      setData(response.data);
+      // console.log(response.data);
       // console.log(response.dateplan.datePlan);
       //
       if (
-        new Date(response.dateplan.datePlan) <= new Date() &&
-        response.churchData.isActiveted === 1
+        new Date(response.data.dateplan) <= new Date() &&
+        response.data.isActiveted === 1
       ) {
         status = "blocked";
-      } else if (response.churchData.isActiveted === 0) {
+      } else if (response.data.isActiveted === 0) {
         status = "inactive";
       } else {
         status = "active";
@@ -155,7 +154,7 @@ export default function Page({ params }: any) {
     <>
       {loading == true ? (
         <Spinner />
-      ) : data?.churchData ? (
+      ) : data?.churchData.name ? (
         <>
           <Modal
             show={openModal}
@@ -170,10 +169,10 @@ export default function Page({ params }: any) {
                 <h3 className="text-md mb-5 font-normal text-gray-500 dark:text-gray-400 ">
                   Tem certeza de que deseja deletar esta igreja? Essa ação será
                   irreversível e resultará na remoção permanente de todos os
-                  dados relacionados. Por favor, confirme sua decisão 
+                  dados relacionados. Por favor, confirme sua decisão
                 </h3>
                 <h3 className="text-md mb-5 font-normal text-gray-500 dark:text-gray-400 ">
-                  Digite &apos;Excluir&apos; para confirmar
+                  Digite a senha de exclusão para confirmar
                 </h3>
                 <div className="py-2">
                   <TextInput
@@ -255,7 +254,7 @@ export default function Page({ params }: any) {
                   </p>
                   <p>
                     <span className="font-semibold">Data de Vencimento:</span>{" "}
-                    {formatDate(new Date(data?.dateplan.datePlan as string))}
+                    {formatDate(new Date(data?.dateplan as string))}
                   </p>
                   <p>
                     <span className="font-semibold">Status:</span>{" "}
@@ -266,39 +265,94 @@ export default function Page({ params }: any) {
                 <div>
                   <p>
                     <span className="font-semibold">Total de Alunos:</span>{" "}
-                    {data?.totalStudents.total_students}
+                    {data?.totalStudents}
                   </p>
                   <p>
                     <span className="font-semibold">Total de Professores:</span>{" "}
-                    {data?.totalTeachers.total_teachers}
+                    {data?.totalTeachers}
                   </p>
                   <p>
                     <span className="font-semibold">
                       Total de Usuários (exceto alunos):
                     </span>{" "}
-                    {
-                      data?.totalMatrixUsersExceptStudents
-                        .total_users_except_students
-                    }
+                    {data?.totalMatrixUsersExceptStudents}
                   </p>
                   <p>
                     <span className="font-semibold">Total de Usuários:</span>{" "}
-                    {data?.totalMatrizUsers.total}
+                    {data?.totalMatrizUsers}
                   </p>
                   <p>
                     <span className="font-semibold">Total de Turmas: </span>
-                    {data?.matrixTeams.total}
+                    {data?.matrixTeams}
                   </p>
                   <p>
                     <span className="font-semibold">Total de Aulas:</span>{" "}
-                    {data?.matrizClasses.total}
+                    {data?.matrizClasses}
                   </p>
                   <p>
                     <span className="font-semibold">Data da Última Aula:</span>{" "}
-                    {data?.lastLesson.last_lesson}
+                    {data?.lastLesson}
                   </p>
                 </div>
               </div>
+            </div>
+            <div className="mb-6 rounded-lg bg-white p-2">
+              <div className="p-4">
+                <h1>Administradores da Igreja</h1>
+              </div>
+              <Table>
+                <TableHead>
+                  <TableHeadCell>Nome do usuário</TableHeadCell>
+                  <TableHeadCell className="hidden md:table-cell">
+                    Email
+                  </TableHeadCell>
+                  <TableHeadCell className="hidden md:table-cell">
+                    Contato
+                  </TableHeadCell>
+                  <TableHeadCell className="hidden md:table-cell">
+                    <span className="sr-only">WPP</span>
+                  </TableHeadCell>
+                </TableHead>
+                <TableBody className="divide-y">
+                  {data.churchData.name.length > 0 ? (
+                    data.churchAdmins.map((user: any, index: any) => (
+                      <>
+                        <TableRow>
+                          <TableCell className="whitespace-nowrap font-medium text-gray-900 ">
+                            <Link href={`/dashboard/church/member/${user.id}`}>
+                              {user.name}{" "}
+                            </Link>
+                          </TableCell>
+                          <TableCell className="hidden md:table-cell">
+                            {user.email}
+                          </TableCell>
+                          <TableCell className="hidden md:table-cell">
+                            {user.contact}
+                          </TableCell>
+                          <TableCell className="hidden md:table-cell">
+                            <a
+                              href={`https://api.whatsapp.com/send?phone=${user.contact.replace(/[()-]/g, "").replace(" ", "")}`}
+                              target="_blank"
+                            >
+                              <FaWhatsapp
+                                color="green"
+                                className="hover:cursor-pointer"
+                                size={36}
+                              />
+                            </a>
+                          </TableCell>
+                        </TableRow>
+                      </>
+                    ))
+                  ) : (
+                    <TableRow className="bg-white ">
+                      <TableCell className="text-center" colSpan={5}>
+                        Nenhum Usuário Cadastrado
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
             </div>
 
             <div className="rounded-lg bg-white p-6">
@@ -309,41 +363,42 @@ export default function Page({ params }: any) {
                 <div>
                   <p>
                     <span className="font-semibold">Total de Filiais: </span>
-                    {data?.branchesTotal.total}
+                    {data?.branchesTotal}
                   </p>
                   <p>
                     <span className="font-semibold">
                       Total de Alunos (Matriz e Filiais):
                     </span>{" "}
-                    {data?.studentsMatrixAndBranch.total_students}
+                    {data?.studentsMatrixAndBranch}
                   </p>
                   <p>
                     <span className="font-semibold">
                       Total de Professores (Matriz e Filiais):
                     </span>{" "}
-                    {data?.teachersMatrixAndBranch.total_teachers}
+                    {data?.teachersMatrixAndBranch}
                   </p>
                   <p>
                     <span className="font-semibold">
                       Total de Usuários (exceto alunos):
                     </span>{" "}
-                    {data?.totalUsersExceptStudents.total_users_except_students}
+                    {data?.totalUsersExceptStudents}
                   </p>
                 </div>
                 <div>
                   <p>
                     <span className="font-semibold">Total de Usuários:</span>{" "}
-                    {data?.totalUsers.total_users}
+                    {data?.totalUsers}
                   </p>
                   <p>
                     <span className="font-semibold">
                       Total de Turmas (Matriz e Filiais):
                     </span>{" "}
-                    {data?.totalTeamsMatrixAndBranches.total}
+                    {data?.totalTeamsMatrixAndBranches}
                   </p>
                 </div>
               </div>
             </div>
+
             <div className="mt-6 rounded-lg border-2 border-red-500 bg-red-100 p-6">
               <h1 className="font-bold">Zona de perigo</h1>
               <span className="my-4 flex w-full rounded-md bg-red-400 p-2 text-sm text-black">
