@@ -110,9 +110,9 @@ type SinglePlan = {
   id: number;
   name: string;
   selected: boolean;
-}
+};
 
-const checkboxPlanArray:SinglePlan[] = [];
+const checkboxPlanArray: SinglePlan[] = [];
 
 function cpfCNPJMask(element: string) {
   // Remove caracteres não numéricos
@@ -148,7 +148,9 @@ export default function Home() {
   const [showAlert, setShowAlert] = useState(false);
   const [pageNumber, setPageNumber] = useState(0);
   const [openModal, setOpenModal] = useState(false);
+  const [openDateModal, setOpenDateModal] = useState(false);
   const [results, showResults] = useState(false);
+  const [date, setDate] = useState("");
   const pageSize = 25;
 
   const fetchData = async () => {
@@ -172,7 +174,6 @@ export default function Home() {
   };
 
   const fetchPlans = async () => {
-    
     try {
       const response = await fetch(`/api/app/plans/list`, {
         headers: {
@@ -184,11 +185,15 @@ export default function Home() {
       selectedPlans.length = 0;
       response.data.map((plan: Plan) => planList.push(plan));
       response.data.map((plan: Plan) => selectedPlans.push(plan.name));
-      console.log("A",response.data);
+      // console.log("A", response.data);
       checkboxPlanArray.length = 0;
       response.data.map((plan: Plan) => {
-        checkboxPlanArray.push({id: plan.id, name: plan.name, selected: true})
-      }) 
+        checkboxPlanArray.push({
+          id: plan.id,
+          name: plan.name,
+          selected: true,
+        });
+      });
       setPlans(response.data);
     } catch (e) {
       // console.log(e);
@@ -278,7 +283,7 @@ export default function Home() {
 
     let url = `/api/app/church/filter`;
 
-    let statusFilter = ""
+    let statusFilter = "";
     if (status == "Ativo") {
       statusFilter = `1`;
     } else if (status == "Inativo") {
@@ -419,6 +424,66 @@ export default function Home() {
                     ?.TypePlan as string;
 
                   setOpenModal(false);
+                }}
+              >
+                Não, cancelar
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+
+      <Modal
+        show={openDateModal}
+        size="md"
+        onClose={() => setOpenDateModal(false)}
+        popup
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            {/* <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" /> */}
+            <h3 className=" text-lg font-normal text-gray-500 dark:text-gray-400">
+              Escolha a nova data de vencimento
+            </h3>
+            <div className="py-4">
+              <Datepicker
+                inline
+                language="pt-BR"
+                labelTodayButton="Hoje"
+                labelClearButton="Limpar"
+                id="datepickerInput"
+                onSelectedDateChanged={(e) => {
+                  console.log("ASD", new Date(e).toDateString());
+                }}
+              />
+            </div>
+            <div className="mt-4 flex justify-center gap-4">
+              <Button
+                color="blue"
+                onClick={() => {
+                  // handleUpdate(updaterId.toString(), updaterPlan);
+                  // const data = document.querySelector("#datepickerInput")
+
+                  setOpenDateModal(false);
+                  toast.success("Data alterada com sucesso");
+                }}
+                onChange={(e) => {
+                  console.log("ASD", e);
+                }}
+              >
+                {"Sim, alterar"}
+              </Button>
+              <Button
+                color="gray"
+                onClick={() => {
+                  const select = document.getElementById(
+                    updaterSelectID,
+                  ) as HTMLSelectElement;
+                  select.value = Churches.find((item) => item.id == updaterId)
+                    ?.TypePlan as string;
+
+                  setOpenDateModal(false);
                 }}
               >
                 Não, cancelar
@@ -684,16 +749,20 @@ export default function Home() {
                         value={formatDateY(item.dateplan)}
                         className="block w-[140px] rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 hover:cursor-pointer focus:border-blue-500 focus:ring-blue-500"
                         placeholder="Select date"
-                        onChange={() => {
-                          clearTimeout(timer);
-                          timer = setTimeout(() => {
-                            toast.info("Alterando data, Aguarde...");
-                            const selected = document.getElementById(
-                              (item.id + 2).toString(),
-                            ) as HTMLInputElement;
-                            renewPlan(item.id, selected.value);
-                          }, 5000);
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setOpenDateModal(true);
                         }}
+                        // onChange={() => {
+                        //   clearTimeout(timer);
+                        //   timer = setTimeout(() => {
+                        //     toast.info("Alterando data, Aguarde...");
+                        //     const selected = document.getElementById(
+                        //       (item.id + 2).toString(),
+                        //     ) as HTMLInputElement;
+                        //     renewPlan(item.id, selected.value);
+                        //   }, 5000);
+                        // }}
                       />
                     </TableCell>
                     <TableCell className="hidden md:table-cell md:w-[140px] ">
@@ -714,8 +783,6 @@ export default function Home() {
                       >
                         {plans.map((plan: any, index: any) => {
                           // console.log(`${item.name} ${item.TypePlan}`);
-
-                          
 
                           return (
                             <option

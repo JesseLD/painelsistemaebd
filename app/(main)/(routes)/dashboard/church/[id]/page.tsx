@@ -177,7 +177,7 @@ export default function Page({ params }: any) {
                 <div className="py-2">
                   <TextInput
                     name="pass"
-                    placeholder="Digite 'Excluir'"
+                    placeholder="Digite a senha de exclusão"
                     id="deleteModalInput"
                     className="p-2"
                     required
