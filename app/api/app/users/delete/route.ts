@@ -32,22 +32,7 @@ export async function GET(req: Request) {
     );
   }
 
-  try {
-    await prisma.user.delete({
-      where: {
-        id: Number(id),
-      },
-    });
-  } catch (e) {
-    return NextResponse.json(
-      {
-        name: "Erro ao deletar usuário",
-      },
-      {
-        status: 400,
-      },
-    );
-  }
+  
 
   return NextResponse.json({
     message: "Deleted",

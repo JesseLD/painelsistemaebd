@@ -47,13 +47,17 @@ export async function POST(req: Request) {
         },
       );
     }
+
+    console.log(data.value)
     try {
       await prisma.plans.create({
         data: {
           name: data.name,
-          price: Number.parseFloat(data.value),
+          price: Number.parseFloat(data.value.replace(",", ".")),
           duration: Number(data.duration),
           description: data.description,
+          maxBranches: Number(data.maxBranches),
+          maxStudents: Number(data.maxStudents)
         },
       });
 
@@ -62,6 +66,7 @@ export async function POST(req: Request) {
         status: 200,
       });
     } catch (e: any) {
+      console.log(e.message);
       return NextResponse.json(
         {
           message: "Internal Server Error",

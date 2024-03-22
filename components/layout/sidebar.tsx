@@ -10,7 +10,7 @@ import { MdOutlineSpaceDashboard } from "react-icons/md";
 import { BsCashCoin } from "react-icons/bs";
 import { TbLayoutSidebarLeftCollapse } from "react-icons/tb";
 import { motion } from "framer-motion";
-
+import { BsGraphUpArrow } from "react-icons/bs";
 // import { Pag2e } from "@/app/testcomponents/page";
 import { FiUsers } from "react-icons/fi";
 type SidebarItemsAttributes = {
@@ -38,6 +38,12 @@ const sidebarItems: SidebarItemsAttributes[] = [
     text: "Usuários",
     isActive: false,
     href: "/dashboard/users/list",
+  },
+  {
+    icon: BsGraphUpArrow,
+    text: "Relatorios",
+    isActive: false,
+    href: "/dashboard/reports",
   },
 ];
 const variants = {
@@ -76,6 +82,7 @@ export const Sidebar = () => {
                     text={item.text}
                     isActive={pathname == item.href ? true : false}
                     collapsed={true}
+                    
                   />
                 </Link>
               ))}

@@ -89,7 +89,7 @@ export default function Page({ params }: any) {
     toast.info("Carregando dados, Aguarde..");
     console.log(config.api_url);
     try {
-      const response = await fetch(config.api_url + `v0/Church/${params.id}`, {
+      const response = await fetch(config.api_url + `v0/Church/Single/${params.id}`, {
         headers: {
           authorization: config.api_key as string,
         },
@@ -98,7 +98,7 @@ export default function Page({ params }: any) {
         .then((data) => data);
 
       setData(response.data);
-      // console.log(response.data);
+      console.log(response);
       // console.log(response.dateplan.datePlan);
       //
       if (
@@ -126,10 +126,13 @@ export default function Page({ params }: any) {
     if (pass.value == config.delete_password) {
       toast.info("Aguarde, Essa operação pode demorar um pouco...");
       try {
-        const response = await fetch(`/api/app/church/delete?id=${params.id}`, {
+        const response = await fetch(`${config.api_url}v0/Church/Delete`, {
+          method: "POST",
           headers: {
+            "content-type": "application/json",
             authorization: config.api_key as string,
           },
+          body: JSON.stringify({id: params.id})
         });
         toast.success("Igreja deletada com sucesso");
         router.push("/dashboard");
@@ -177,7 +180,7 @@ export default function Page({ params }: any) {
                 <div className="py-2">
                   <TextInput
                     name="pass"
-                    placeholder="Digite 'Excluir'"
+                    placeholder="Digite a senha de exclusão"
                     id="deleteModalInput"
                     className="p-2"
                     required

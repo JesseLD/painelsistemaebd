@@ -13,11 +13,14 @@ export const Header = ({ pageName, userName }: Props) => {
     <header className="fixed z-20 flex h-[80px] w-full items-center justify-between bg-white px-6">
       <div className="flex w-full max-w-[360px] items-center justify-between ">
         <Link href={"/dashboard"}>
-          <Image src={logoOrange} alt="" width={120} className="pl-2 " />
-        </Link>
-        <h1 className="hidden text-2xl font-bold text-neutral-800 md:block">
-          {pageName}
-        </h1>
+          <Image
+            src={logoOrange}
+            alt=""
+            width={120}
+            className="pl-2 "
+            priority={false}
+          />
+        </Link>     
       </div>
       <div className="mr-6">
         <LoggedUser name={userName} />
