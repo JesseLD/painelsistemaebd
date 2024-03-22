@@ -30,6 +30,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { config } from "@/app/utils/config";
 import { addToCache, getFromCache } from "@/app/utils/cache";
 import { addLog } from "@/app/utils/logs";
+import Link from "next/link";
 
 type Plan = {
   id: number;
@@ -82,6 +83,7 @@ let updaterId = 0;
 let updaterPlan = "";
 let updaterSelectID = "";
 let updaterSelectValue = "";
+let updaterDate = "";
 
 type ChurchStatus = {
   id: number;
@@ -155,7 +157,7 @@ export default function Home() {
 
   const fetchData = async () => {
     const response = await fetch(
-      `/api/app/church/list?offset=${incrementPage}`,
+      `${config.api_url}v0/Church/List?offset=${incrementPage}`,
       {
         headers: {
           authorization: config.api_key as string,
@@ -164,55 +166,50 @@ export default function Home() {
     )
       .then((res) => res.json())
       .then((data) => data);
-    // console.log("Data fetched");
-    // console.log(response.data);
     response.data.map((church: Church) => Churches.push(church));
     setData(response.data);
-    // addToCache("churches", response.data);
-    // console.log("Cache", getFromCache("churches"));
     return;
   };
 
   const fetchPlans = async () => {
     try {
-      const response = await fetch(`/api/app/plans/list`, {
+      const response = await fetch(`${config.api_url}v0/Plans/List`, {
         headers: {
           authorization: config.api_key as string,
         },
       })
         .then((res) => res.json())
         .then((data) => data);
+      // console.log("A", response);
       selectedPlans.length = 0;
-      response.data.map((plan: Plan) => planList.push(plan));
-      response.data.map((plan: Plan) => selectedPlans.push(plan.name));
-      // console.log("A", response.data);
+      response.map((plan: Plan) => planList.push(plan));
+      response.map((plan: Plan) => selectedPlans.push(plan.name));
       checkboxPlanArray.length = 0;
-      response.data.map((plan: Plan) => {
+      response.map((plan: Plan) => {
         checkboxPlanArray.push({
           id: plan.id,
           name: plan.name,
           selected: true,
         });
       });
-      setPlans(response.data);
+      setPlans(response);
     } catch (e) {
-      // console.log(e);
+      console.log(e);
       toast.error("Erro ao buscar planos");
     }
   };
 
   const handleUpdate = async (id: string, plan: string) => {
-    addLog(
-      `Plano da igreja ${id} alterado para ${plan} por ${actualUser?.value}`,
-    );
-    const response = await fetch(
-      `/api/app/church/update?id=${id}&plan=${plan}`,
-      {
-        headers: {
-          authorization: config.api_key as string,
-        },
+    // addLog(
+    //   `Plano da igreja ${id} alterado para ${plan} por ${actualUser?.value}`,
+    // );
+    const response = await fetch(`${config.api_url}v0/Church/UpdatePlan`, {
+      method: "POST",
+      headers: {
+        authorization: config.api_key as string,
       },
-    )
+      body: JSON.stringify({ id, plan }),
+    })
       .then((res) => res.json())
       .then((data) => data);
     let duration = 0;
@@ -239,17 +236,17 @@ export default function Home() {
   };
 
   const handleActivate = async (id: string, activate: number) => {
-    addLog(
-      `Igreja ${id} ${activate == 1 ? "ativada" : "desativada"} por ${actualUser?.value}`,
-    );
-    const response = await fetch(
-      `/api/app/church/activate?id=${id}&activate=${activate}`,
-      {
-        headers: {
-          authorization: config.api_key as string,
-        },
+    // addLog(
+    //   `Igreja ${id} ${activate == 1 ? "ativada" : "desativada"} por ${actualUser?.value}`,
+    // );
+    const response = await fetch(`${config.api_url}v0/Church/Activate`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: config.api_key as string,
       },
-    );
+      body: JSON.stringify({ id, activate }),
+    });
 
     await fetchData();
     await fetchPlans();
@@ -281,7 +278,7 @@ export default function Home() {
     const phone = (document.getElementById("phoneFilter") as HTMLInputElement)
       .value;
 
-    let url = `/api/app/church/filter`;
+    let url = `${config.api_url}v0/Church/Filter`;
 
     let statusFilter = "";
     if (status == "Ativo") {
@@ -310,6 +307,7 @@ export default function Home() {
         await fetch(url, {
           method: "POST",
           headers: {
+            "content-type": "application/json",
             authorization: config.api_key as string,
           },
           body: JSON.stringify(localData),
@@ -342,21 +340,24 @@ export default function Home() {
     return () => {};
   }, []); // Atualize quando o número da página mudar
 
-  const editItem = (id: number) => {
-    router.push(`/dashboard/edit/${id}`);
-  };
-
   const renewPlan = async (id: number, time: string) => {
-    addLog(`Plano da igreja ${id} renovado por ${actualUser?.value}`);
-    const response = await fetch(
-      `/api/app/church/updatePlan?id=${id}&time=${time}`,
-      {
-        headers: {
-          authorization: config.api_key as string,
-        },
+    // addLog(`Plano da igreja ${id} renovado por ${actualUser?.value}`);
+    console.log("ID", id);
+    console.log("TIme", time);
+    console.log(JSON.stringify({ id: id, time: time }));
+    const response = await fetch(`${config.api_url}v0/Church/UpdateDatePlan`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: config.api_key as string,
       },
-    );
+      body: JSON.stringify({
+        id,
+        time,
+      }),
+    });
 
+    console.log(response);
     if (response.status == 200) {
       await fetchData();
       await fetchPlans();
@@ -368,15 +369,18 @@ export default function Home() {
 
   const blockPlan = async (id: number) => {
     // alert("Atualizado com sucesso")
-    addLog(`Plano da igreja ${id} bloqueado por ${actualUser?.value}`);
-    const response = await fetch(
-      `/api/app/church/updatePlan?id=${id}&time=${addPlanDays(new Date().toISOString(), -1)}`,
-      {
-        headers: {
-          authorization: config.api_key as string,
-        },
+    // addLog(`Plano da igreja ${id} bloqueado por ${actualUser?.value}`);
+    const response = await fetch(`${config.api_url}v0/Church/UpdateDatePlan`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: config.api_key as string,
       },
-    );
+      body: JSON.stringify({
+        id,
+        time: addPlanDays(new Date().toISOString(), -1),
+      }),
+    });
 
     if (response.status == 200) {
       await fetchData();
@@ -453,8 +457,13 @@ export default function Home() {
                 labelTodayButton="Hoje"
                 labelClearButton="Limpar"
                 id="datepickerInput"
+                onClick={(e) => {
+                  console.log(e.target);
+                }}
                 onSelectedDateChanged={(e) => {
-                  console.log("ASD", new Date(e).toDateString());
+                  updaterDate =
+                    new Date(e).toISOString().split("T")[0] + " 00:00:00.00";
+                  console.log("DATE", updaterDate);
                 }}
               />
             </div>
@@ -465,8 +474,9 @@ export default function Home() {
                   // handleUpdate(updaterId.toString(), updaterPlan);
                   // const data = document.querySelector("#datepickerInput")
 
+                  renewPlan(updaterId, updaterDate);
                   setOpenDateModal(false);
-                  toast.success("Data alterada com sucesso");
+                  // toast.success("Data alterada com sucesso");
                 }}
                 onChange={(e) => {
                   console.log("ASD", e);
@@ -715,20 +725,22 @@ export default function Home() {
                   >
                     <TableCell
                       className="w-[160px]whitespace-nowrap font-medium text-gray-900 dark:text-white 2xl:w-[120px]"
-                      onClick={() => {
-                        router.push("/dashboard/church/" + item.id.toString());
-                      }}
+                      // onClick={() => {
+                      //   router.push();
+                      // }}
                     >
-                      <span className="hidden">
-                        {item.name.length > 30
-                          ? `${item.name.slice(0, 30)}... `
-                          : item.name}
-                      </span>
-                      <span className="md:inline">
-                        {item.name.length > 10
-                          ? `${item.name.slice(0, 10)}... `
-                          : item.name}
-                      </span>
+                      <Link href={"/dashboard/church/" + item.id.toString()}>
+                        <span className="hidden">
+                          {item.name.length > 30
+                            ? `${item.name.slice(0, 30)}... `
+                            : item.name}
+                        </span>
+                        <span className="md:inline">
+                          {item.name.length > 10
+                            ? `${item.name.slice(0, 10)}... `
+                            : item.name}
+                        </span>
+                      </Link>
                     </TableCell>
                     <TableCell className="hidden w-[120px] xl:table-cell">
                       {/* {item.CPF_CNPJ.replace(/[./-]/g, "")}
@@ -750,6 +762,8 @@ export default function Home() {
                         className="block w-[140px] rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 hover:cursor-pointer focus:border-blue-500 focus:ring-blue-500"
                         placeholder="Select date"
                         onClick={(e) => {
+                          updaterId = item.id;
+                          // alert(updaterId)
                           e.preventDefault();
                           setOpenDateModal(true);
                         }}

@@ -22,6 +22,8 @@ import { HiOutlineExclamationCircle } from "react-icons/hi";
 import MoneyInput from "@/components/ui/moneyInput";
 import { config } from "@/app/utils/config";
 import { addLog } from "@/app/utils/logs";
+import CurrencyInput from "react-currency-input-field";
+import Link from "next/link";
 
 type Plan = {
   id: number;
@@ -29,6 +31,8 @@ type Plan = {
   duration: number;
   price: number;
   description: string;
+  maxStudents: number;
+  maxBranches: number;
 };
 
 const planList: Plan[] = [];
@@ -41,7 +45,6 @@ let editPlanDescription = "";
 let editPlanDuration = "";
 let editPlanId = "";
 const Page = () => {
-
   const loggedUser = document.querySelector("#loggedEmail") as HTMLInputElement;
 
   const router = useRouter();
@@ -53,6 +56,8 @@ const Page = () => {
   const [editPlanName, setEditPlanName] = useState("");
   const [editPlanDescription, setEditPlanDescription] = useState("");
   const [editPlanDuration, setEditPlanDuration] = useState("");
+  const [editMaxStudents, setEditMaxStudents] = useState("");
+  const [editMaxBranches, setEditMaxBranches] = useState("");
   const [editPlanValue, setEditPlanValue] = useState("");
 
   function onCloseModal() {
@@ -90,16 +95,25 @@ const Page = () => {
     const planDuration = document.getElementById(
       "planDuration",
     ) as HTMLInputElement;
+    const maxStudents = document.getElementById(
+      "maxStudents",
+    ) as HTMLInputElement;
+    const maxBranches = document.getElementById(
+      "maxBranches",
+    ) as HTMLInputElement;
 
     if (!planName.value || !planValue.value || !planDescription.value) {
       toast.error("Preencha todos os campos");
       return;
     }
+    console.log("Value", planValue.value);
     const data = {
       name: planName.value,
-      value: planValue.value,
+      value: planValue.value.replace("R$", "").replace(",", "."),
       description: planDescription.value,
       duration: planDuration.value,
+      maxStudents: maxStudents.value,
+      maxBranches: maxBranches.value,
     };
     // console.log("DATA: ", data);
     const response = await fetch("/api/app/plans/new", {
@@ -154,8 +168,20 @@ const Page = () => {
     const planDuration = document.getElementById(
       "planDurationEdit",
     ) as HTMLInputElement;
+    const maxStudents = document.getElementById(
+      "maxStudentsEdit",
+    ) as HTMLInputElement;
+    const maxBranches = document.getElementById(
+      "maxBranchesEdit",
+    ) as HTMLInputElement;
 
-    if (!planName.value || !planValue.value || !planDescription.value) {
+    if (
+      !planName.value ||
+      !planValue.value ||
+      !planDescription.value ||
+      !maxStudents ||
+      !maxStudents
+    ) {
       toast.error("Preencha todos os campos");
       return;
     }
@@ -165,6 +191,8 @@ const Page = () => {
       value: planValue.value,
       description: planDescription.value,
       duration: planDuration.value,
+      maxStudents: maxStudents.value,
+      maxBranches: maxBranches.value,
     };
     // console.log("DATA: ", data);
     const response = await fetch("/api/app/plans/edit", {
@@ -313,17 +341,34 @@ const Page = () => {
               <div className="mb-2 block">
                 <Label htmlFor="planName" value="Nome do plano" />
               </div>
-              <TextInput id="planName" placeholder="Nome do plano" required />
+              <TextInput
+                id="planName"
+                placeholder="Nome do plano"
+                required
+                color={"default"}
+              />
             </div>
 
             <div>
               <div className="mb-2 block">
                 <Label htmlFor="planValue" value="Valor do Plano" />
               </div>
-              <MoneyInput
+              {/* <MoneyInput
                 id="planValue"
                 value={amount}
                 onChange={handleAmountChange}
+              /> */}
+              <CurrencyInput
+                className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 "
+                id="planValue"
+                // value={amount}
+                decimalsLimit={2}
+                prefix="R$"
+                decimalSeparator=","
+                groupSeparator="."
+                onValueChange={(value, name, values) =>
+                  console.log(value, name, values)
+                }
               />
             </div>
 
@@ -334,20 +379,49 @@ const Page = () => {
               <TextInput
                 id="planDescription"
                 placeholder="Descrição do plano"
+                color={"default"}
               />
             </div>
 
             <div>
               <div className="mb-2 block">
-                <Label htmlFor="planDuration" value="Duração plano (Dias)" />
+                <Label htmlFor="planDuration" value="Duração do plano" />
               </div>
               <TextInput
                 id="planDuration"
                 placeholder="Duração em dias"
                 type="number"
                 required
+                color={"default"}
               />
             </div>
+            <div>
+              <div className="mb-2 block">
+                <Label htmlFor="planDuration" value="Detalhes do plano" />
+              </div>
+              <div className="flex gap-2">
+                <TextInput
+                  id="maxStudents"
+                  placeholder="Quantidade de alunos"
+                  type="number"
+                  required
+                  color={"default"}
+                />
+                <TextInput
+                  id="maxBranches"
+                  placeholder="Quantidade de filiais"
+                  type="number"
+                  required
+                  color={"default"}
+                />
+              </div>
+            </div>
+            {/* <div>
+              <div className="mb-2 block">
+                <Label htmlFor="planDuration" value="Duração plano (Dias)" />
+              </div>
+              
+            </div> */}
 
             <div className="flex justify-between">
               <Button
@@ -401,10 +475,18 @@ const Page = () => {
               <div className="mb-2 block">
                 <Label htmlFor="planValueEdit" value="Valor do Plano" />
               </div>
-              <MoneyInput
+              <CurrencyInput
+                className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 "
                 id="planValueEdit"
+                // value={amount}
                 value={editPlanValue}
-                onChange={handleAmountChangeEdit}
+                decimalsLimit={2}
+                prefix="R$"
+                decimalSeparator=","
+                groupSeparator="."
+                onValueChange={(value, name, values) =>
+                  console.log(value, name, values)
+                }
               />
             </div>
 
@@ -443,6 +525,39 @@ const Page = () => {
                 required
               />
             </div>
+            <div>
+              <div className="mb-2 block">
+                <Label htmlFor="maxStudentsEdit" value="Detalhes do plano" />
+              </div>
+              <div className="flex gap-2">
+                <TextInput
+                  id="maxStudentsEdit"
+                  placeholder="Quantidade de alunos"
+                  type="number"
+                  value={editMaxStudents}
+                  onChange={(e) => {
+                    setEditMaxStudents(e.target.value);
+                  }}
+                  required
+                />
+                <TextInput
+                  id="maxBranchesEdit"
+                  placeholder="Quantidade de filiais"
+                  type="number"
+                  value={editMaxBranches}
+                  onChange={(e) => {
+                    setEditMaxBranches(e.target.value);
+                  }}
+                  required
+                />
+              </div>
+            </div>
+            {/* <div>
+              <div className="mb-2 block">
+                <Label htmlFor="maxBranchesEdit" value="Duração plano (Dias)" />
+              </div>
+              
+            </div> */}
 
             <div className="flex justify-between">
               <Button
@@ -504,7 +619,7 @@ const Page = () => {
                   key={index + plan.id.toString()}
                 >
                   <TableCell className="whitespace-nowrap font-medium text-gray-900 ">
-                    {plan.name}
+                    <Link href={`/dashboard/plans/plan/${plan.id}`}>{plan.name}</Link>
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
                     {new Intl.NumberFormat("pt-BR", {
@@ -537,6 +652,8 @@ const Page = () => {
                           setEditPlanValue(plan.price.toString());
                           setEditPlanDescription(plan.description);
                           setEditPlanDuration(plan.duration.toString());
+                          setEditMaxStudents(plan.maxStudents.toString());
+                          setEditMaxBranches(plan.maxBranches.toString());
                           setOpenEditModal(true);
                         }}
                       >

@@ -20,10 +20,7 @@ export const Header = ({ pageName, userName }: Props) => {
             className="pl-2 "
             priority={false}
           />
-        </Link>
-        <h1 className="hidden text-2xl font-bold text-neutral-800 md:block">
-          {pageName}
-        </h1>
+        </Link>     
       </div>
       <div className="mr-6">
         <LoggedUser name={userName} />

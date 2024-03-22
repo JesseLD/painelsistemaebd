@@ -62,7 +62,7 @@ export async function GET(req: Request) {
   } catch (e) {
     return NextResponse.json(
       {
-        name: "Erro ao deletar usuário",
+        name: "Erro ao encontrar usuário",
       },
       {
         status: 400,

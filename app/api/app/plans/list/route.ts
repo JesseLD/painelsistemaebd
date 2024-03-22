@@ -23,7 +23,9 @@ export async function GET(req: Request) {
       name: true,
       duration: true,
       price: true,
-      description: true
+      description: true,
+      maxBranches: true,
+      maxStudents: true,
     },
   });
   // setData(data);

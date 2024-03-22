@@ -30,7 +30,7 @@ export const ButtonWithIcon: React.FC<Props> = ({
       } p-4 transition hover:-translate-y-2`}
     >
       <div>
-        <Icon {...iconProps} size={24} />
+        <Icon {...iconProps} size={24} className="text-slate-700"/>
       </div>
       <div className="hidden md:block">{text}</div>
     </div>
@@ -41,7 +41,7 @@ export const ButtonWithIcon: React.FC<Props> = ({
       } p-4 transition hover:-translate-y-2`}
     >
       <div>
-        <Icon {...iconProps} size={24} />
+        <Icon {...iconProps} size={24} className="text-slate-700" />
       </div>
     
     </div>
