@@ -206,6 +206,7 @@ export default function Home() {
     const response = await fetch(`${config.api_url}v0/Church/UpdatePlan`, {
       method: "POST",
       headers: {
+        "content-type": "application/json",
         authorization: config.api_key as string,
       },
       body: JSON.stringify({ id, plan }),
